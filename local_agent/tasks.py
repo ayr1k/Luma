@@ -48,6 +48,14 @@ class Tasks:
                         raise ValueError('当前任务不处于暂停状态')
                 elif action == 'revise':
                     prepared = engine.prepare_revision(body.message_index, body.content)
+                    from .context import ensure_idle
+                    ensure_idle(engine.state)
+                    branch = self.store.fork_conversation(project_id)
+                    project_id = branch['id']
+                    engine = self.core_factory(project_id)
+                elif action == 'summarize':
+                    from .context import summary_source
+                    prepared = summary_source(engine.state)
                 else:
                     pending = engine.state.get('pending_command')
                     if not pending or pending['approval_id'] != body.approval_id:
@@ -70,6 +78,8 @@ class Tasks:
                 # Keep approval consumption and execution status transitions in the worker.
                 engine.state['progress']={'stage':'queued'}
                 engine.save(engine.state)
+                if action == 'send' and self.store.project(project_id):
+                    self.store.clear_draft(project_id)
                 thread.start()
             except BaseException:
                 self.lock.release()
@@ -86,6 +96,8 @@ class Tasks:
                 engine.cancel()
             elif action == 'revise':
                 engine.revise(body.content, prepared)
+            elif action == 'summarize':
+                engine.summarize(prepared)
             else:
                 engine.approve(body.approval_id, body.allow)
         except Exception as exc:

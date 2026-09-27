@@ -21,3 +21,6 @@ dist/
 demo-runs/
 .env.*
 !.env.example
+
+drafts/
+model-profiles.json

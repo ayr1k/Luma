@@ -1,3 +1,9 @@
+# Luma 0.7.4 Latest / 0.7.2 LTS
+
+本版增加上下文用量估算、可确认与恢复的长对话摘要、保留原历史的对话分支和本机草稿恢复。详见 [0.7.4 更新说明](docs/release-0.7.4.md)。
+
+发布只提供一个 `Luma-Setup-0.7.4.exe`，安装时选择 Latest/LTS。构建使用 `scripts/build-release.ps1 -InnoCompiler <ISCC.exe> -LTSDirectory <v0.7.2-lts源码目录> -PythonExe <python.exe>`；需要已安装开发及打包依赖的 Python 环境。
+
 # Luma 0.7.3
 
 任务进度与操作卡片、对话搜索和归档、桌面联动，以及更宽松的插件数量上限。详见 [升级说明](docs/release-0.7.3.md)。

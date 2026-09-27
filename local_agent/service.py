@@ -44,7 +44,7 @@ def create_app(settings=None, model=None, on_task_done=None):
             finally:
                 await asyncio.to_thread(tasks.shutdown)
 
-    app = FastAPI(title='Local Agent Client API', version='0.7.3', lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(title='Local Agent Client API', version='0.7.4', lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
     bearer = HTTPBearer(auto_error=False)
     lock = threading.Lock()
 
@@ -82,6 +82,7 @@ def create_app(settings=None, model=None, on_task_done=None):
         options = Preferences.model_validate(state.get('execution_options', preferences.model_dump())) if state.get('pending_command') else preferences
         execution_model = LANModel(settings, options) if isinstance(model, LANModel) else model
         engine = AgentCore(state, execution_model, store.save, options=options, extensions=extensions)
+        engine.context_window = profiles.entry(settings).get('context_window', 0)
         if state.get('pending_command'):
             state['status'] = 'waiting_approval'
         if state!=original:engine.persist()
@@ -109,7 +110,7 @@ def create_app(settings=None, model=None, on_task_done=None):
 
     @app.get('/health')
     def health():
-        return {'ok': True, 'service': 'local-agent-client', 'version': '0.7.3'}
+        return {'ok': True, 'service': 'local-agent-client', 'version': '0.7.4'}
 
     @app.get('/')
     def index():
@@ -188,7 +189,7 @@ def create_app(settings=None, model=None, on_task_done=None):
         with exclusive():
             # Export an allowlist only: no host, model names, keys, prompts, paths or provider text.
             e=profiles.entry(settings)
-            return {'format':'luma-model-diagnostics','version':1,'luma':'0.7.3',
+            return {'format':'luma-model-diagnostics','version':1,'luma':'0.7.4',
                     'parameters':e['parameters'],'manual':e['manual'],'tests':e['tested']}
 
     @app.get('/v1/preferences', dependencies=[Depends(auth)])
@@ -349,6 +350,72 @@ def create_app(settings=None, model=None, on_task_done=None):
         with exclusive():
             return store.add_conversation(project_id,body.name)
 
+    from .schemas import DraftInput, ContextSettings, SummaryApply
+    @app.get('/v1/projects/{project_id}/draft', dependencies=[Depends(auth)])
+    def get_draft(project_id: str):
+        return store.draft(project_id)
+
+    @app.put('/v1/projects/{project_id}/draft', dependencies=[Depends(auth)])
+    def save_draft(project_id: str, body: DraftInput):
+        store.draft(project_id, body.model_dump())
+        return {'saved':True}
+
+    @app.post('/v1/projects/{project_id}/fork', response_model=Project, dependencies=[Depends(auth)])
+    def fork(project_id: str):
+        with exclusive():
+            return store.fork_conversation(project_id)
+
+    @app.get('/v1/projects/{project_id}/context', dependencies=[Depends(auth)])
+    def context_info(project_id: str):
+        from .context import usage, summary_source, valid_memory
+        from .tool_schema import TOOLS
+        with exclusive():
+            engine = core(project_id)
+            schemas = [t for t in TOOLS if t['function']['name'] in engine.tool_names()]
+            if preferences.mode == 'chat' and not preferences.web_enabled and not engine.state.get('active_skills'):
+                schemas = []
+            info = usage(engine.state, schemas, preferences.max_tokens, engine.context_window)
+            try:
+                summary_source(engine.state)
+                info['summary_unavailable'] = None
+            except ValueError as exc:
+                info['summary_unavailable'] = str(exc)
+            return dict(info, model=settings.model, memory=valid_memory(engine.state) or None,
+                        candidate=engine.state.get('summary_candidate'), error=engine.state.get('summary_error'))
+
+    @app.put('/v1/context-settings', dependencies=[Depends(auth)])
+    def context_settings(body: ContextSettings):
+        with exclusive():
+            no_pending()
+            profiles.entry(settings)['context_window'] = body.window
+            profiles.save()
+            return {'window':body.window}
+
+    @app.post('/v1/projects/{project_id}/summary-tasks', response_model=TaskState, status_code=202, dependencies=[Depends(auth)])
+    def summary_task(project_id: str):
+        return tasks.start(project_id, 'summarize', None)
+
+    @app.put('/v1/projects/{project_id}/context', dependencies=[Depends(auth)])
+    def apply_context(project_id: str, body: SummaryApply):
+        from .context import apply_summary
+        with exclusive():
+            engine = core(project_id)
+            apply_summary(engine.state, body.summary)
+            engine.persist()
+            return {'applied':True}
+
+    @app.post('/v1/projects/{project_id}/context/restore', dependencies=[Depends(auth)])
+    def restore_context(project_id: str):
+        from .context import ensure_idle
+        with exclusive():
+            engine = core(project_id)
+            ensure_idle(engine.state)
+            engine.state.pop('context_memory', None)
+            engine.state.pop('summary_candidate', None)
+            engine.state.pop('summary_error', None)
+            engine.persist()
+            return {'restored':True}
+
     @app.post('/v1/projects', response_model=Project, dependencies=[Depends(auth)])
     def add_project(body: ProjectCreate):
         with exclusive():
@@ -363,6 +430,7 @@ def create_app(settings=None, model=None, on_task_done=None):
             # Clear history before removing the index; re-adding a folder must
             # never resurrect a deleted conversation. Project files stay intact.
             store.save(store.empty_project(project))
+            store.clear_draft(project_id)
             store.save_projects([p for p in store.projects() if p['id'] != project_id])
             tasks.forget(project_id)
             return {'removed': project_id, 'files_deleted': False}
@@ -417,6 +485,7 @@ def create_app(settings=None, model=None, on_task_done=None):
             engine = core(project_id)
             state = store.empty_project(store.project(project_id))
             store.save(state)
+            store.clear_draft(project_id)
             return state
 
     @app.post('/v1/projects/{project_id}/messages', response_model=Session, dependencies=[Depends(auth)])

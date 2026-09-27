@@ -11,7 +11,7 @@
 AppId={{F0720B19-4EE9-42AE-B5C0-3FF362DB8B3A}
 AppName=Luma
 AppVersion={code:SelectedVersion}
-VersionInfoVersion=0.7.3
+VersionInfoVersion=0.7.4
 AppVerName={code:SelectedName}
 DefaultDirName={localappdata}\Programs\LocalAgent
 DefaultGroupName=Luma
@@ -20,7 +20,7 @@ ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
 MinVersion=10.0
 OutputDir={#OutputDir}
-OutputBaseFilename=Luma-Setup-Latest-LTS-0.7.3
+OutputBaseFilename=Luma-Setup-0.7.4
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
@@ -98,18 +98,18 @@ function IsLatest: Boolean;
 begin Result := not IsLTS; end;
 function SelectedVersion(Param: String): String;
 begin
-  if IsLTS then Result := '0.7.2' else Result := '0.7.3';
+  if IsLTS then Result := '0.7.2' else Result := '0.7.4';
 end;
 function SelectedName(Param: String): String;
 begin
-  if IsLTS then Result := 'Luma 0.7.2 LTS' else Result := 'Luma 0.7.3 Latest';
+  if IsLTS then Result := 'Luma 0.7.2 LTS' else Result := 'Luma 0.7.4 Latest';
 end;
 procedure InitializeWizard;
 begin
   ChannelPage := CreateInputOptionPage(wpWelcome, '选择更新渠道',
     'Latest 或长期支持版 LTS',
     'Latest 提供最新功能；LTS 以稳定使用和插件兼容为优先。覆盖切换前请退出托盘并备份用户数据。两条渠道共用安装位置，不能同时运行。', True, False);
-  ChannelPage.Add('Latest 0.7.3 — 每模型参数、能力档案与诊断');
+  ChannelPage.Add('Latest 0.7.4 — 上下文管理、历史分支与草稿恢复');
   ChannelPage.Add('LTS 0.7.2 — 首个长期支持锚点');
   ChannelPage.SelectedValueIndex := 0;
   if Lowercase(ExpandConstant('{param:CHANNEL|latest}')) = 'lts' then ChannelPage.SelectedValueIndex := 1;

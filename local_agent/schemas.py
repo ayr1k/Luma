@@ -10,6 +10,18 @@ class ProjectCreate(StrictModel):
 class ConversationCreate(StrictModel):
     name: str = Field(default='新任务',min_length=1,max_length=80)
 
+class ContextSettings(StrictModel):
+    window: int = Field(default=0, ge=0, le=2000000)
+
+class SummaryApply(StrictModel):
+    summary: str = Field(min_length=1, max_length=12000)
+
+class DraftInput(StrictModel):
+    text: str = Field(default='', max_length=100000)
+    attachments: list['AttachmentInput'] = Field(default_factory=list, max_length=4)
+    skills: list[str] = Field(default_factory=list, max_length=8)
+    plugins: list[str] = Field(default_factory=list, max_length=12)
+
 class ProjectUpdate(StrictModel):
     default_skills: list[str] | None = Field(default=None, max_length=8)
     default_plugins: list[str] | None = Field(default=None, max_length=12)
@@ -18,6 +30,8 @@ class ProjectUpdate(StrictModel):
     archived: bool | None = None
 
 class Project(BaseModel):
+    branch_of: str | None = None
+    branch_name: str | None = None
     group_id: str | None = None
     session_id: str | None = None
     project_name: str | None = None
@@ -62,6 +76,11 @@ class PendingCommand(BaseModel):
     arguments: str
 
 class Session(BaseModel):
+    context_memory: dict[str, Any] | None = None
+    summary_candidate: dict[str, Any] | None = None
+    summary_error: str | None = None
+    context_usage: dict[str, Any] = Field(default_factory=dict)
+    branch_origin: dict[str, Any] | None = None
     session_id: str | None = None
     progress: dict[str, Any] = Field(default_factory=dict)
     turn_id: str | None = None

@@ -1,5 +1,6 @@
 """Atomic JSON persistence retaining legacy project IDs and session filenames."""
 import hashlib
+import copy
 import re
 import uuid
 import json
@@ -159,6 +160,50 @@ class Store:
         state=empty_session(project['path'])
         if project.get('session_id'):state['session_id']=project['session_id']
         return state
+
+    @synchronized
+    def draft(self, project_id, value=None):
+        if self.project(project_id) is None:
+            raise ValueError('对话不存在，未保存草稿')
+        path = self.root / 'drafts' / (project_id + '.json')
+        if value is not None:
+            if sum(len(a.get('data', '')) for a in value.get('attachments', [])) > 28000000:
+                raise ValueError('草稿附件合计超过 20 MB')
+            atomic_json(path, value)
+        return json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
+
+    @synchronized
+    def clear_draft(self, project_id):
+        if not re.fullmatch(r'[a-f0-9]{12}', project_id):
+            raise ValueError('Invalid conversation ID')
+        (self.root / 'drafts' / (project_id + '.json')).unlink(missing_ok=True)
+
+    @synchronized
+    def fork_conversation(self, project_id, name=None):
+        from .context import ensure_idle
+        source = self.project(project_id)
+        if source is None:
+            raise ValueError('对话不存在')
+        state = copy.deepcopy(self.load_project(source))
+        ensure_idle(state)
+        row = self.add_conversation(project_id, name or (source['name'][:60] + ' · 分支'))
+        state['session_id'] = row['session_id']
+        state.update(status='idle', steps=0, no_tool_streak=0, pause_reason=None,
+                     pending_command=None, tool_queue=[], agent_changes={}, progress={}, turn_id=None)
+        state.pop('summary_candidate', None)
+        state.pop('summary_error', None)
+        state['branch_origin'] = dict(project_id=project_id, name=source['name'])
+        for log in state['tool_logs']:
+            log['inherited'] = True
+        # History is copied; approvals and rollback ownership are never copied.
+        self.save(state)
+        rows = self.projects()
+        for item in rows:
+            if item['id'] == row['id']:
+                item.update(branch_of=project_id, branch_name=source['name'])
+                row = item
+        self.save_projects(rows)
+        return row
 
     @synchronized
     def add_conversation(self, project_id, name='新任务'):

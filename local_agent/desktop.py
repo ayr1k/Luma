@@ -66,9 +66,9 @@ class Bridge:
                 return {'ok': False, 'error': '来源地址无效'}
             webbrowser.open(url)
             return {'ok': True, 'data': None}
-        routes = {'model-profile':('GET','/v1/model-profile'),'save-model-profile':('PUT','/v1/model-profile'),'model-diagnostics':('POST','/v1/model-diagnostics'),'diagnostic-report':('GET','/v1/model-diagnostics/report'),'extensions': ('GET','/v1/extensions'), 'extension-action': ('POST','/v1/extensions'), 'preferences': ('GET', '/v1/preferences'), 'save-preferences': ('PUT', '/v1/preferences'), 'new-chat': ('POST', '/v1/chat'), 'models': ('GET', '/v1/models'), 'select-model': ('PUT', '/v1/models/selection'), 'projects': ('GET', '/v1/projects'), 'connect': ('POST', '/v1/connection/test'),
+        routes = {'save-context-settings':('PUT','/v1/context-settings'),'model-profile':('GET','/v1/model-profile'),'save-model-profile':('PUT','/v1/model-profile'),'model-diagnostics':('POST','/v1/model-diagnostics'),'diagnostic-report':('GET','/v1/model-diagnostics/report'),'extensions': ('GET','/v1/extensions'), 'extension-action': ('POST','/v1/extensions'), 'preferences': ('GET', '/v1/preferences'), 'save-preferences': ('PUT', '/v1/preferences'), 'new-chat': ('POST', '/v1/chat'), 'models': ('GET', '/v1/models'), 'select-model': ('PUT', '/v1/models/selection'), 'projects': ('GET', '/v1/projects'), 'connect': ('POST', '/v1/connection/test'),
                   'configuration': ('GET', '/v1/configuration'), 'configure': ('PUT', '/v1/configuration')}
-        project_routes = {'new-conversation':('POST','conversations'), 'update-project': ('PUT','metadata'), 'continue': ('POST', 'continue'), 'stop-paused': ('POST', 'stop-paused'), 'session': ('GET', 'session'), 'send': ('POST', 'tasks'), 'revise': ('POST', 'revision-tasks'),
+        project_routes = {'draft':('GET','draft'),'save-draft':('PUT','draft'),'fork':('POST','fork'),'context':('GET','context'),'summarize':('POST','summary-tasks'),'apply-context':('PUT','context'),'restore-context':('POST','context/restore'),'new-conversation':('POST','conversations'), 'update-project': ('PUT','metadata'), 'continue': ('POST', 'continue'), 'stop-paused': ('POST', 'stop-paused'), 'session': ('GET', 'session'), 'send': ('POST', 'tasks'), 'revise': ('POST', 'revision-tasks'),
             'approve': ('POST', 'approval-tasks'), 'changes': ('GET', 'changes'),
             'keep': ('POST', 'changes/keep'), 'revert': ('POST', 'changes/revert'),
             'reset': ('POST', 'session/reset'), 'files': ('GET', 'files'), 'file': ('GET', 'file')}
@@ -116,12 +116,12 @@ class Bridge:
                 data = response.json()
                 if action == 'extension-action' and self._refresh_features:
                     self._refresh_features()
-                if action in {'send', 'revise', 'approve', 'task', 'cancel', 'continue', 'stop-paused'}:
+                if action in {'summarize', 'send', 'revise', 'approve', 'task', 'cancel', 'continue', 'stop-paused'}:
                     if data['running']:
                         self._active_task = data['id']
                     elif self._active_task == data['id']:
                         self._active_task = None
-                if self._features and action in {'send','revise','approve','task','continue','cancel','stop-paused'}:
+                if self._features and action in {'summarize','send','revise','approve','task','continue','cancel','stop-paused'}:
                     self._features.completed('running' if data.get('running') else data.get('session',{}).get('status','idle'))
                 return {'ok': True, 'data': data}
         except Exception as exc:
