@@ -1,0 +1,9 @@
+# Run on 192.168.1.77 only. Replace the model tag with your installed tool-capable model.
+model_list:
+  - model_name: local-agent-coder
+    litellm_params:
+      model: ollama_chat/REPLACE_WITH_INSTALLED_MODEL_TAG
+      api_base: http://127.0.0.1:11434
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL

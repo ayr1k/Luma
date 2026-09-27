@@ -1,0 +1,10 @@
+{
+  "id": "writing-kit",
+  "name": "写作助手",
+  "version": "1.0.0",
+  "description": "梳理需求、起草并检查中文文案。纯 Skill 示例。",
+  "api_version": 1,
+  "skills": [
+    "clear-writing"
+  ]
+}
