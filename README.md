@@ -1,216 +1,276 @@
-# Luma 0.7.4 Latest / 0.7.2 LTS
+Luma
 
-本版增加上下文用量估算、可确认与恢复的长对话摘要、保留原历史的对话分支和本机草稿恢复。详见 [0.7.4 更新说明](docs/release-0.7.4.md)。
+**连接你的模型，处理你的项目。**
 
-发布只提供一个 `Luma-Setup-0.7.4.exe`，安装时选择 Latest/LTS。构建使用 `scripts/build-release.ps1 -InnoCompiler <ISCC.exe> -LTSDirectory <v0.7.2-lts源码目录> -PythonExe <python.exe>`；需要已安装开发及打包依赖的 Python 环境。
+Luma 是面向 Windows 的桌面 AI Agent，将对话、项目文件、工具执行、插件和 Skills 放在同一个工作界面中。你可以用它进行日常交流、分析项目、制定计划，以及在明确的权限边界下修改本地文件和执行命令。
 
-# Luma 0.7.3
+Luma 采用客户端与推理服务分离的架构：**客户端负责本地操作，模型服务负责推理。** 当前主要面向可信局域网部署，适合个人工作站以及共享模型主机的使用场景。
 
-任务进度与操作卡片、对话搜索和归档、桌面联动，以及更宽松的插件数量上限。详见 [升级说明](docs/release-0.7.3.md)。
+[下载安装](https://github.com/ayr1k/Luma/releases) · [更新说明](docs/release-0.7.4.md) · [扩展开发指南](docs/extensions.md) · [LTS 政策](docs/lts.md) · [反馈问题](https://github.com/ayr1k/Luma/issues)
 
-## Luma 0.6.1
+## 主要功能
 
-统一扩展中心入口样式，新增五个预置 Skill 和默认 / 自定义安装。详见 [升级说明](docs/release-0.6.1.md)。
+- **独立桌面应用**：使用内嵌 WebView 界面，无需打开独立浏览器；支持浅色与深色主题、系统托盘和后台任务完成通知。
+- **Chat / Plan / Work**：根据任务选择自由对话、只读分析或实际执行，避免把所有需求都当作文件修改任务。
+- **项目与多对话管理**：支持独立聊天、同项目多会话、搜索、状态筛选、归档和删除。
+- **模型连接与配置**：根据服务地址和客户端密钥获取可用模型，在主界面切换模型，配置模型参数并测试连接。
+- **流式对话与附件**：逐步显示模型输出，支持发送图片和文件；具体处理能力取决于模型、网关及文件类型。
+- **本地项目工具**：读取、写入、搜索文件，应用补丁，查看 Git diff，并在审批后执行终端命令。
+- **文件与变更预览**：只读文件预览支持语法高亮、行号和换行；支持查看 Agent 文件变更，并在条件满足时回滚。
+- **插件与 Skills**：通过本地 ZIP 或开发目录安装扩展，使用 `/` 选择 Skills、使用 `$` 选择工具插件。
+- **联网搜索**：可启用基于 DDGS 的搜索，效果受网络环境和上游搜索服务可用性影响。
+- **上下文管理**：Latest 0.7.4 提供 Token 用量估算、可编辑确认的对话摘要、历史分支和本机草稿恢复。
 
-## Luma 0.6.0
+功能随版本和渠道有所不同，请以对应版本的更新说明为准。
 
-新增插件与 Skills：扩展中心、本地包安装、独立 Skill 文件夹、显式选择，以及逐次审批的独立进程工具。详见 [升级说明](docs/release-0.6.0.md) 和 [扩展开发指南](docs/extensions.md)。
+## 下载与安装
 
-## 0.5.7
+1. 前往 [GitHub Releases](https://github.com/ayr1k/Luma/releases)，选择需要的正式版本。
+2. 下载 `Luma-Setup-<最新版版本号>.exe`。普通用户无需下载 GitHub 自动生成的 Source code 压缩包。
+3. 运行安装程序，选择 **Latest** 或 **LTS**。
+4. 选择默认安装，或通过自定义安装调整预置 Skills 和插件。
+5. 启动 Luma，在“连接设置”中填写模型服务地址和对应的客户端密钥。
+6. 获取模型列表并选择模型，使用“测试模型连接”检查连接情况。
 
-修复工具成功后自然结束答复被继续催促的问题。详见 [升级说明](docs/release-0.5.7.md)。
+**运行环境：** Windows 桌面环境及 Microsoft Edge WebView2 Runtime。安装包包含客户端运行所需的 Python 环境，普通用户无需另行安装 Python。
 
-# Luma 0.5.6
+**模型需要另外配置：** Luma 安装包不包含模型、Ollama 或 LiteLLM，也不提供公共推理服务、共享密钥或免费额度。
 
-可恢复的任务暂停、无工具回复限制调整、思考内容展示与兼容参数。详见 [升级说明](docs/release-0.5.6.md)。
-
-# Luma 0.5.5
-
-新增系统托盘后台运行及任务完成通知。详见 [升级说明](docs/release-0.5.5.md)。
-
-# Luma 0.5.4
-
-新增内置帮助、更新日志，以及带语法高亮和行号的只读文件预览。详见 [升级说明](docs/release-0.5.4.md)。
-
-# Luma 0.5.3
-
-新增消息时间、生成耗时、复制及编辑提问后重新生成。详见 [升级说明](docs/release-0.5.3.md)。
-
-# Luma 0.5.2
-
-修复浅色主题，新增图片与文件附件。详见 [0.5.2 升级说明](docs/release-0.5.2.md)。
-
-# Luma 0.5.1
-
-Local Agent 更名为 Luma：新版桌面 UI、Chat / Plan / Work、DDGS 联网搜索、参数设置与软件设置。
-
-详见 [0.5.1 使用与升级说明](docs/release-0.5.1.md)。现有数据目录不变，兼容旧版本配置和项目。
-
-# Luma 0.5.0
-
-Local Agent 更名为 Luma：新版桌面 UI、Chat / Plan / Work、DDGS 联网搜索、参数设置与软件设置。
-
-详见 [0.5.0 使用与升级说明](docs/release-0.5.0.md)。现有数据目录不变，兼容旧版本配置和项目。
-
-## 0.4.0：主界面模型选择
-
-自动获取当前主机和客户端密钥可用的模型，支持搜索、刷新和记住选择。详见 [升级说明](docs/release-0.4.0.md)。
-
-# Local Agent Client
-
-## 0.3.0 任务运行更新
-
-新增任务进度、停止后续执行、审批后台续跑、多开保护和 Windows 会话保存冲突修复。用户已确认上版在正常桌面能打开窗口；本版沿用同一窗口方案。升级与验收范围见 [0.3.0 发布说明](docs/release-0.3.0.md)。
-
-## 0.2.0 安装预览版
-
-已新增独立程序与安装包、首次连接配置、Windows 加密密钥存储和仅本次使用模式。见 [安装与验证说明](docs/release-0.2.0.md)。原生桌面启动仍待正常用户环境验收，当前包为预览版。
-
-
-## 新增：桌面客户端
-
-本机已安装桌面依赖。先关闭旧 Streamlit 窗口对应的终端服务，以及 `serve` API 服务（Ctrl+C），避免同时操作同一个会话目录。
-
-在工程目录双击 **Start Local Agent.vbs**，或运行：
+发布页提供 SHA-256 校验文件时，可在 PowerShell 中计算安装包的哈希并与之比较：
 
 ```powershell
-cd C:\Users\lempi\local-agent
-.\.venv-client\Scripts\python.exe -m local_agent desktop
+Get-FileHash .\Luma-Setup-0.7.4.exe -Algorithm SHA256
 ```
 
-桌面入口自动启动独立回环 API 和 WebView2 窗口，无需打开浏览器或单独运行 `serve`。若启动失败，使用 **Start Local Agent.cmd** 查看提示。桌面模式使用临时回环端口，因此不需要打开 8765 网页。
+当前安装包未进行代码签名。SHA-256 用于核对文件完整性，不能替代发布者身份签名。
 
-功能：原生选择本地项目文件夹、项目切换、会话聊天、命令批准/拒绝、文件预览、Agent/Git diff、保留/安全回滚、工具记录、模型连接与简短推理测试。执行期间界面禁用其他操作，关闭窗口会被阻止，直到任务完成或等待审批。尚不支持流式输出和取消运行。
+## Latest 与 LTS
 
-网页只调用受限 native bridge；模型和本机密钥不会传给页面。模型回复和文件内容用纯文本渲染。独立桌面之间有进程锁；旧 CLI/Streamlit 仍需手动关闭。窗口缓存位于 `.webview`，项目与会话沿用现有位置。
+每次发布只提供一个统一安装包，在安装过程中选择渠道。
 
-新机器安装：`python -m pip install -e '.[desktop,web,test]'`，需要 Windows 和 Microsoft Edge WebView2 Runtime。本阶段提供源码及双击启动入口，已生成 0.2.0 安装预览包，验收范围见最新发布说明。
+| 渠道 | 定位 | 版本基线 |
+| --- | --- | --- |
+| Latest | 持续引入功能和交互改进 | 本源码对应 0.7.4；已发布版本见 Releases |
+| LTS | 优先维护稳定性和既有插件兼容性 | 0.7.2 LTS |
 
-验证：16 个 Python 测试通过、1 个符号链接权限测试跳过；浏览器引擎交互测试通过。**原生 WebView2 容器在当前受限执行环境中初始化超时，尚未确认真实桌面启动成功**。启动器会在超时后显示错误，不会静默卡在空白窗口。浏览器交互测试使用模拟项目数据，不代表原生容器验收。
+LTS（Long-Term Support，长期支持版）用于提供变化较少的使用和扩展适配基线。维护重点是重要缺陷、安全问题和必要的兼容修复，不主动引入重大新功能或破坏性接口变化。
 
-桌面 API 用法依据 [pywebview 官方文档](https://pywebview.flowrl.com/api/)。以下为保留的服务层说明。
+- 大版本按首位划分：`0.x.x`、`1.x.x`、`2.x.x`，每个大版本选择一个 LTS 锚点。
+- 在选定稳定候选版本后的下一次版本迭代发布时，该候选正式转入 LTS。
+- 当前 LTS 的支持和下载窗口保留至下一代 LTS 正式发布。
+- 第一个锚点为 **0.7.2 LTS**，在 0.7.3 发布时转入 LTS。
+- 后续锚点根据实际稳定性选择，尚未公布的版本和日期不作为发布承诺。
 
-用户电脑运行 Agent Core 和本机 API，负责项目文件、Git、会话、变更追踪及命令审批。主机 `192.168.1.77` 的 LiteLLM/Ollama 只提供 OpenAI-compatible 推理 API。模型收到的消息和工具结果可能包含客户端代码内容；文件执行位置始终是客户端。
+两条渠道目前共用安装位置和用户数据目录。升级或切换前，请从托盘彻底退出 Luma，并备份重要项目与用户数据。对任意历史版本的降级兼容不作保证。
+
+完整说明见 [LTS 政策与路线图](docs/lts.md)。
+
+## 开始使用
+
+### 1. 连接模型服务
+
+推荐的局域网部署结构：
+
+```text
+用户电脑                              模型主机
+┌─────────────────────────┐          ┌──────────────────────┐
+│ Luma 桌面界面           │          │ LiteLLM 网关         │
+│ 本机 API 与 Agent Core  │ ──LAN──▶ │ Ollama / 模型服务    │
+│ 项目文件、Git、工具执行 │          │ 模型推理             │
+└─────────────────────────┘          └──────────────────────┘
+```
+
+连接地址通常形如 `http://<模型主机局域网地址>:4000/v1`。每台客户端应使用单独签发的 LiteLLM Virtual Key，**不要把主机 Master Key 分发给客户端**。
+
+模型需要支持所用网关的 OpenAI-compatible 接口。Work 模式依赖模型正确生成工具调用；视觉输入、推理参数和思考内容返回也需要模型与网关共同支持。
+
+模型列表中出现某个模型，并不代表它已经通过所有能力测试。
+
+### 2. 选择工作模式
+
+| 模式 | 适用场景 | 项目操作边界 |
+| --- | --- | --- |
+| Chat | 问答、写作、讨论、附件交流 | 不读取或修改项目文件；可读取所选 Skill 的附属资料 |
+| Plan | 理解代码、分析问题、制定实施计划 | 使用允许的只读项目工具，不修改项目 |
+| Work | 修改代码、整理项目、执行实际任务 | 可使用文件编辑工具；终端命令和代码插件调用需要审批 |
+
+添加本地项目后，Luma 在该项目的工作目录内执行文件工具。独立聊天可用于不依赖项目的讨论。
+
+### 3. 查看并确认结果
+
+执行期间可以查看任务状态、工具记录和待审批操作。完成后，使用文件预览、Agent 变更及 Git diff 检查结果。
+
+同一项目的不同对话和历史分支**共享实际文件夹**。对话分支保留历史，不是项目文件快照，也不会把文件恢复到当时的状态。
+
+### 4. 管理长对话
+
+Latest 0.7.4 的“上下文管理”可以生成摘要草案，编辑并确认后才应用于后续请求；完整聊天历史仍保留，也可以恢复完整上下文。
+
+Token 用量是估算值，不是模型服务的实际计费或分词统计。草稿显示“已保存到本机”后，可以在重新打开对应对话时恢复。
+
+## 插件与 Skills
+
+**Skill** 保存可复用的工作方法和参考资料；**插件**可以提供工具、成套 Skills、外观配置或受支持的软件功能。
+
+### 使用扩展
+
+- 在“扩展中心”导入本地 ZIP 或开发目录，查看详情、兼容范围、配置和诊断信息。
+- 输入 `/` 选择 Skill，输入 `$` 选择工具插件；也可以使用输入区对应按钮。
+- 为项目设置默认扩展，新对话自动带入，并显示可移除的标签。
+- 按需导入、导出支持的扩展配置。
+
+预置内容包括：
+
+| 类型 | 内容 |
+| --- | --- |
+| Skills | 代码审查、问题排查、实施计划、文档总结、写作 |
+| 工具插件 | 图片处理、项目概览、文档读取、文件整理 |
+| 外观插件 | 配色、字体、图标、背景材质效果 |
+| 软件功能插件 | 快捷短语、快捷键、桌面悬浮组件 |
+
+实际可用效果受版本、插件配置及系统支持情况影响。安装预置插件不等于自动信任或启用其中的代码。
+
+### 开发扩展
+
+用户 Skill 默认放在：
+
+```text
+%LOCALAPPDATA%\LocalAgent\skills\<skill-id>\SKILL.md
+```
+
+配置了 `AGENT_DATA_DIR` 时，以配置的数据目录为准。修改用户 Skill 后，可在扩展中心重新扫描。
+
+插件通过 `plugin.json` 声明身份、版本、支持范围和能力。当前采用本地 ZIP 与开发目录分发，尚无在线插件市场或插件自动更新服务。
+
+- [扩展开发指南](docs/extensions.md)：格式、能力、权限、兼容性及限制。
+- [纯 Skill 插件示例](examples/writing-kit)：打包可复用工作方法。
+- [Python 工具插件示例](examples/project-stats)：工具声明与进程通信。
+
+开发环境中可以执行安装前检查：
+
+```powershell
+python -m local_agent check-extension .\examples\project-stats
+```
+
+Skill 不能解除模式限制或跳过审批。代码插件在独立进程中执行，但独立进程不是操作系统级沙箱；只启用你信任的插件。
+
+## 数据与权限
+
+- **本地存储**：桌面版默认将配置、项目记录、会话和扩展数据保存在 `%LOCALAPPDATA%\LocalAgent`。源码运行和旧入口的默认值可能不同，可通过 `AGENT_DATA_DIR` 指定。
+- **模型请求**：提供给模型的消息、文件内容、图片、工具结果和所选 Skill 内容会发送到配置的推理服务。局域网部署不等于数据始终只在客户端内流转。
+- **联网搜索**：启用后，搜索请求会访问外部搜索服务。
+- **文件边界**：内置文件工具会检查项目路径边界；这不构成对整个应用或插件的操作系统级隔离。
+- **命令审批**：获批终端命令具有当前用户账户的权限，工作目录限制不等于文件访问权限限制。
+- **变更回滚**：Agent 文件编辑可以记录并在检查通过时回滚；终端命令和插件造成的修改不保证可由 Luma 自动撤销。
+- **本机服务**：客户端 API 监听回环地址并使用独立令牌，不应直接暴露到局域网或公网。
+
+当前部署范围是可信局域网；使用 HTTP 的推理连接不提供传输加密。本项目目前不包含公网接入或 Tailscale 部署方案。
+
+## 从源码运行
+
+需要 Python 3.11+、Git，以及 Windows 桌面环境下的 WebView2 Runtime。以下命令使用 PowerShell：
+
+```powershell
+git clone https://github.com/ayr1k/Luma.git
+cd Luma
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[desktop,web,test]"
+.\.venv\Scripts\python.exe -m local_agent desktop
+```
+
+桌面入口会启动本机服务和应用窗口，无需再单独启动 `serve`。模型连接可在界面中配置。
+
+若使用独立 CLI 或 API，请参考 [.env.example](.env.example) 建立自己的 `.env`，替换所有示例值：
+
+| 配置项 | 含义 |
+| --- | --- |
+| `LITELLM_BASE_URL` | 模型网关的 OpenAI-compatible API 地址 |
+| `LITELLM_API_KEY` | 当前客户端的模型服务密钥 |
+| `AGENT_MODEL` | 模型标识，应与网关公布的名称一致 |
+| `AGENT_LOCAL_TOKEN` | 本机 API 的独立随机令牌，不要复用模型密钥 |
+| `AGENT_DATA_DIR` | 用户数据目录 |
+| `AGENT_PORT` | 独立本机服务端口，默认 8765 |
+
+连接检查及独立服务入口：
+
+```powershell
+.\.venv\Scripts\python.exe -m local_agent check --inference
+.\.venv\Scripts\python.exe -m local_agent serve
+```
+
+不要让桌面版、独立服务或旧入口同时操作同一份用户数据。
+
+### 模型主机
+
+主机部署参考 [LiteLLM 配置示例](host/litellm.config.example.yaml) 和 [客户端密钥签发脚本](host/create_client_key.py)。使用前需替换示例中的主机地址、模型名称，并配置网关所需的数据库与环境变量。
+
+密钥签发脚本只在主机运行。示例默认限制模型为 `local-agent-coder`，请根据自己的网关配置调整。模型服务、数据库和网关不由客户端安装程序自动部署。
+
+### 测试与构建
+
+```powershell
+# 运行自动化测试
+.\.venv\Scripts\python.exe -m pytest -q
+
+# 使用模拟 HTTP 网关运行隔离演示
+.\.venv\Scripts\python.exe scripts\demo.py
+```
+
+模拟测试验证客户端行为和通信协议，不代表所有真实模型都具有相同的工具调用或摘要质量。
+
+Windows 安装包使用 PyInstaller 和 Inno Setup 构建。构建环境需要安装桌面及打包依赖，并准备独立的 LTS 源码目录：
+
+```powershell
+.\scripts\build-release.ps1 `
+  -InnoCompiler "C:\path\to\ISCC.exe" `
+  -LTSDirectory "C:\path\to\lts-source" `
+  -PythonExe ".\.venv\Scripts\python.exe"
+```
+
+脚本生成一个包含 Latest/LTS 选择的安装包，以及对应的 `SHA256SUMS.txt`。LTS 基线标签为 `v0.7.2-lts`。
 
 ## 工程结构
 
 ```text
-agent.py                 兼容命令行入口
-web.py                   原 Streamlit UI，使用共用 Core
-local_agent/
-  core.py                Agent 状态机、工具队列、一次性审批、变更追踪/回滚
-  tools.py               原文件/Git/搜索工具和已批准命令执行器
-  model.py               LAN 推理通信与连接测试
-  config.py              客户端配置；导入 Core 不要求模型密钥
-  storage.py             projects/sessions 原子 JSON 持久化
-  schemas.py             API 请求/响应模型
-  service.py             FastAPI 本机服务
-  files.py               文件预览、Agent diff、Git diff
-  tool_schema.py         模型工具 schema
-  prompt.py              共用系统提示
-host/                    主机 LiteLLM 配置、客户端密钥签发脚本
-scripts/demo.py          模拟 HTTP / 真实 LAN 两种端到端演示
-tests/                   Core、服务和旧 UI 回归测试
-backups/pre-productization/  重构前 agent.py、web.py 备份
+local_agent/     Agent Core、本机 API、模型通信、存储与桌面界面
+host/            推理网关示例与客户端密钥签发脚本
+presets/         预置 Skills
+preset_plugins/  预置插件
+examples/        扩展开发示例
+scripts/         启动、演示与构建脚本
+packaging/       桌面打包与安装程序配置
+tests/           自动化测试
+docs/            版本说明、LTS 政策、扩展指南与 API schema
 ```
 
-## 安装与启动（Windows PowerShell）
+API 的机器可读定义见 [OpenAPI schema](docs/openapi.json)。除健康检查外，本机 API 要求身份验证。
 
-使用可运行的 Python 3.11+。已有 `.venv` 可以继续使用；若不可用，创建新的环境：
+## 反馈与贡献
 
-```powershell
-cd C:\Users\lempi\local-agent
-python -m venv .venv-client
-.\.venv-client\Scripts\python.exe -m pip install -e '.[web,test]'
-```
+欢迎通过 [Issues](https://github.com/ayr1k/Luma/issues) 提交问题和建议，通过 Pull Request 提交改进。
 
-保留现有 `.env`；新客户端参考 `.env.example` 创建自己的 `.env`。配置：
+报告问题时，尽量提供：
 
-| 配置 | 含义 |
-|---|---|
-| `LITELLM_BASE_URL` | `http://192.168.1.77:4000/v1` |
-| `LITELLM_API_KEY` | 主机单独签发给这台客户端的 Virtual Key |
-| `AGENT_MODEL` | `local-agent-coder` |
-| `AGENT_LOCAL_TOKEN` | 本机 API 专用随机令牌，与 Virtual Key 完全独立 |
-| `AGENT_DATA_DIR` | 默认工程目录；兼容现有 projects.json / sessions |
-| `AGENT_PORT` | 默认 `8765` |
+- Luma 版本、Latest/LTS 渠道及 Windows 版本。
+- 模型和网关类型、复现步骤、预期行为与实际结果。
+- 去除敏感信息后的截图或错误信息。
 
-新安装生成本机令牌：`python -c "import secrets; print(secrets.token_urlsafe(32))"`，填入 `.env`。不要把主机 Master Key 放到客户端。
+请勿上传 API Key、密码、完整个人会话或未经允许的项目内容。涉及凭据泄露或可利用安全漏洞的问题，请避免公开发布利用细节，先与维护者确认私下反馈渠道。
 
-```powershell
-# 检查模型列表；加 --inference 会执行一条简短推理
-.\.venv-client\Scripts\python.exe -m local_agent check --inference
+修改代码时，请说明改动目的及验证方法；涉及模型、工具、存储或扩展接口的改动，应补充相应测试并说明兼容性影响。功能建议不代表已纳入发布计划。
 
-# 本机服务，仅监听 127.0.0.1:8765
-.\.venv-client\Scripts\python.exe -m local_agent serve
+## 文档
 
-# 保留的独立入口（二选一，不要与服务同时使用同一数据目录）
-.\.venv-client\Scripts\python.exe agent.py C:\path\to\project
-.\.venv-client\Scripts\python.exe -m streamlit run web.py --server.address 127.0.0.1
-```
+- [0.7.4 更新说明](docs/release-0.7.4.md)
+- [0.7.3 更新说明](docs/release-0.7.3.md)
+- [LTS 说明与路线图](docs/lts.md)
+- [插件与 Skills 开发指南](docs/extensions.md)
+- [历史版本文档](docs/)
 
-也可运行 `scripts/start-client.ps1 -Python .\.venv-client\Scripts\python.exe`。桌面模式见本文开头；安装包见 0.2.0 发布说明。
+软件内的“帮助”菜单也提供说明书、更新日志和扩展开发指南入口。
 
-## API 合约
+## 许可证
 
-除 `/health` 外，所有路由都需要 `Authorization: Bearer <AGENT_LOCAL_TOKEN>`。本机服务不接受浏览器 Origin，不开放 CORS；后续桌面壳应通过 native bridge 调用。不要将本机 API 绑定到 `0.0.0.0`。
+Luma 采用 **GNU General Public License v3.0（GPL-3.0）**，完整条款见 [LICENSE](LICENSE)。
 
-完整机器可读 schema 由鉴权后的 `GET /openapi.json` 提供，静态副本见 `docs/openapi.json`。
-
-| 方法 | 路径 | 用途 |
-|---|---|---|
-| GET | `/health` | 本机服务状态 |
-| POST | `/v1/connection/test` | `{"inference":false}`，验证网关/密钥/模型；true 增加真实推理 |
-| GET/POST | `/v1/projects` | 项目列表 / `{"path":"C:/project"}` 注册已有本地目录 |
-| DELETE | `/v1/projects/{id}` | 从列表移除，保留磁盘文件和会话 |
-| GET | `/v1/projects/{id}/session` | 获取会话、状态、待审批命令 |
-| POST | `/v1/projects/{id}/session/reset` | 清空该项目当前会话及变更追踪，保留工作文件 |
-| POST | `/v1/projects/{id}/messages` | `{"content":"任务描述"}`，运行至完成、失败或待审批 |
-| POST | `/v1/projects/{id}/approvals` | `{"approval_id":"…","allow":true}`，消费审批并继续 |
-| GET | `/v1/projects/{id}/changes` | Agent diff 和 Git 变更 |
-| POST | `/v1/projects/{id}/changes/keep` | 接受变更、清空追踪 |
-| POST | `/v1/projects/{id}/changes/revert` | 哈希匹配才回滚，返回 reverted/skipped |
-
-状态包括 `idle/running/waiting_approval/completed/failed/interrupted`。审批 ID 绑定原始命令、项目和工具调用，只使用一次；旧审批重放返回 409。批量工具调用在审批后继续队列，不丢失后续调用。命令执行前持久化审批消费；执行期间崩溃会进入 interrupted，必须检查文件并新建会话，不会自动重跑命令。
-
-0.7.3 支持同项目多会话：旧主会话沿用 workspace SHA-256 文件名，新会话使用 conversation-ID 文件；各自保留历史、审批与变更记录。任务异步执行和轮询，支持停止；一次只运行一个任务，不使用多 worker。同项目文件共享，其他任务待审批时不可开始新的执行。进程锁防止多个客户端同时写同一数据目录。
-
-## 沙箱与审批边界
-
-文件工具解析真实路径后必须位于 workspace 内；搜索和预览也检查符号链接目标。`run_command` 无法经普通工具分发绕过审批。终端命令使用现有 `shell=True` 行为，工作目录是 workspace，但它不是操作系统级沙箱，获批命令仍可访问用户权限内的其他位置。审批者需查看完整命令与目录。
-
-Agent changes 追踪 write_file/apply_patch，保存原始字节以准确回滚换行。文件在 Agent 修改后又被手工修改时，回滚跳过它。命令导致的文件修改仍通过 Git diff 查看，不伪装成可安全自动回滚的 Agent 文件编辑。
-
-本机令牌与模型 Key 不在 API schema、会话日志或输出中返回。局域网 HTTP 不加密链路，部署仅限可信 LAN；文件沙箱不防御并发替换链接等恶意本机进程。本阶段不配置公网或 Tailscale。
-
-## 主机配置与每客户端 Virtual Key
-
-保留现有主机服务，参考 `host/litellm.config.example.yaml` 调整。主机需要 PostgreSQL、`DATABASE_URL`、`LITELLM_MASTER_KEY`；模型 tag 替换成实际安装的支持 tools 的 Ollama 模型。以主机本地 Ollama 为上游：
-
-```powershell
-litellm --config host/litellm.config.example.yaml --host 192.168.1.77 --port 4000
-python host/create_client_key.py client-alice
-```
-
-签发脚本只在主机运行，从环境变量读取 Master Key，返回限定 `local-agent-coder`、30 天有效、每分钟 30 次的独立客户端 Key。分别发给对应用户，写入各自 `.env`；在 LiteLLM 管理端撤销/轮换。Ollama 与数据库无需对客户端开放；主机防火墙仅允许可信 LAN 来源访问 4000。
-
-本次只验证现有凭据可连接/推理，没有更改正在运行的主机配置、创建数据库或签发真实客户端 Key，现有凭据是否是 Virtual Key 尚未确认。
-
-依据：[LiteLLM Virtual Keys](https://docs.litellm.ai/docs/proxy/virtual_keys)、[Ollama provider](https://docs.litellm.ai/docs/providers/ollama)。
-
-## 演示与测试
-
-```powershell
-python scripts/demo.py
-python scripts/demo.py --live --base-url http://192.168.1.77:4000/v1
-python -m pytest -q
-```
-
-演示会新建隔离项目，通过 FastAPI → Core → OpenAI HTTP → 模型 → 客户端文件工具完成闭环。默认模式使用确定性的模拟 HTTP 网关；`--live` 使用真实主机。演示只自动批准固定命令 `echo local-tool-ok`，其他命令拒绝。结果和会话保留在 `demo-runs`，不会改现有用户项目。
-
-验证记录见 `docs/verification.md`。
-
-
-
-### 0.7.3 项目任务 API
-`POST /v1/projects/{id}/conversations` 使用可选 name 新建同项目会话，返回独立 id；已有 project 路由中的 id 同样可以指向新会话。列表返回 group_id、project_name、kind、session_id、status、updated_at。归档/删除针对单个会话，default_skills/default_plugins 修改对该项目组生效。旧主会话 ID 和磁盘文件保持兼容。
+第三方组件、字体、图标及其他资源遵循各自的许可证。Luma 的许可证不替代这些第三方许可证；例如 Phosphor 图标的声明见 [第三方许可证文件](docs/phosphor-LICENSE.txt)。
