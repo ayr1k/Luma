@@ -1,0 +1,136 @@
+{
+  "id": "luma-file-organizer",
+  "name": "文件整理",
+  "description": "检查重复文件，先预览清单，再审批重命名或移动。",
+  "version": "1.1.0",
+  "api_version": 1,
+  "min_luma": "0.6.2",
+  "max_luma": "0.7.99",
+  "category": "tools",
+  "runtime": "python",
+  "entrypoint": "main.py",
+  "permissions": [
+    "local-code"
+  ],
+  "tools": [
+    {
+      "name": "scan",
+      "description": "扫描文件和重复内容，不删除文件，最多 5000 项；哈希预算 200 MB，单文件 20 MB。",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "directory": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000,
+            "description": "项目内目录，默认 ."
+          },
+          "depth": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 8
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "effect": "read"
+    },
+    {
+      "name": "plan-moves",
+      "description": "生成并保存整理计划，返回 plan_id 和完整 moves。此步骤不移动项目文件。",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "moves": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 50,
+            "items": {
+              "type": "object",
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000,
+                  "description": "项目内源文件路径"
+                },
+                "target": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000,
+                  "description": "项目内目标路径，不覆盖"
+                }
+              },
+              "required": [
+                "source",
+                "target"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "moves"
+        ],
+        "additionalProperties": false
+      },
+      "effect": "read"
+    },
+    {
+      "name": "apply-moves",
+      "description": "执行已保存计划。必须提交返回的完整 moves 清单并等待用户批准；源文件改变或目标已存在时拒绝，不支持自动撤销。",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "moves": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 50,
+            "items": {
+              "type": "object",
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000,
+                  "description": "项目内源文件路径"
+                },
+                "target": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000,
+                  "description": "项目内目标路径，不覆盖"
+                }
+              },
+              "required": [
+                "source",
+                "target"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "plan_id",
+          "moves"
+        ],
+        "additionalProperties": false
+      },
+      "effect": "write"
+    }
+  ],
+  "skills": [
+    "luma-file-organizer"
+  ],
+  "author": "Luma",
+  "examples": [
+    "在 Work 模式用 $ 选择「文件整理」，描述任务后发送；工具运行前确认审批。"
+  ],
+  "changelog": "1.1.0 / Luma 0.7.0：验证多会话下的工具、配置与工作目录行为；更新兼容范围和 Skill 多任务说明。",
+  "tested_luma": "0.7.0"
+}

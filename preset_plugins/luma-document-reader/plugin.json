@@ -1,0 +1,60 @@
+{
+  "id": "luma-document-reader",
+  "name": "文档读取",
+  "description": "分段读取 PDF、DOCX 与文本，定位关键词。",
+  "version": "1.1.0",
+  "api_version": 1,
+  "min_luma": "0.6.2",
+  "max_luma": "0.7.99",
+  "category": "tools",
+  "runtime": "python",
+  "entrypoint": "main.py",
+  "permissions": [
+    "local-code"
+  ],
+  "tools": [
+    {
+      "name": "read-document",
+      "description": "读取 PDF 页、DOCX 段落或文本行。start 从 1 开始；count 默认 20，PDF 每次最多 10 页。query 只筛选本次范围。扫描 PDF 不做 OCR。",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000,
+            "description": "项目内文件路径"
+          },
+          "start": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "query": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "effect": "read"
+    }
+  ],
+  "skills": [
+    "luma-document-reader"
+  ],
+  "author": "Luma",
+  "examples": [
+    "在 Work 模式用 $ 选择「文档读取」，描述任务后发送；工具运行前确认审批。"
+  ],
+  "changelog": "1.1.0 / Luma 0.7.0：验证多会话下的工具、配置与工作目录行为；更新兼容范围和 Skill 多任务说明。",
+  "tested_luma": "0.7.0"
+}

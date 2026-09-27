@@ -1,0 +1,26 @@
+{
+  "id": "project-stats",
+  "name": "项目概览",
+  "version": "1.0.0",
+  "description": "统计项目顶层文件和文件夹数量，演示审批后的独立进程工具。",
+  "api_version": 1,
+  "runtime": "python",
+  "entrypoint": "main.py",
+  "permissions": [
+    "local-code"
+  ],
+  "tools": [
+    {
+      "name": "count-files",
+      "description": "Count direct files and directories in the current project without reading file contents.",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    }
+  ],
+  "skills": [
+    "project-overview"
+  ]
+}

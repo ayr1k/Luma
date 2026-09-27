@@ -1,0 +1,20 @@
+{
+  "id": "luma-icons",
+  "name": "轻盈图标",
+  "description": "切换细线与圆角线条图标。",
+  "version": "1.1.0",
+  "api_version": 1,
+  "min_luma": "0.6.3",
+  "category": "appearance",
+  "contribution": {
+    "slot": "icons",
+    "defaults": {}
+  },
+  "author": "Luma",
+  "examples": [
+    "在扩展中心启用「轻盈图标」，然后打开配置调整效果。"
+  ],
+  "changelog": "1.1.0 / Luma 0.7.0：验证多会话下的工具、配置与工作目录行为；更新兼容范围和 Skill 多任务说明。",
+  "max_luma": "0.7.99",
+  "tested_luma": "0.7.0"
+}

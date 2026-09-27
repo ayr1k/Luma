@@ -1,0 +1,88 @@
+{
+  "id": "luma-image-tools",
+  "name": "图片处理",
+  "description": "查看图片信息、等比缩放、转换 JPG/PNG/WebP。",
+  "version": "1.1.0",
+  "api_version": 1,
+  "min_luma": "0.6.2",
+  "max_luma": "0.7.99",
+  "category": "tools",
+  "runtime": "python",
+  "entrypoint": "main.py",
+  "permissions": [
+    "local-code"
+  ],
+  "tools": [
+    {
+      "name": "inspect",
+      "description": "读取图片尺寸、格式与帧数。",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000,
+            "description": "项目内图片路径"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "effect": "read"
+    },
+    {
+      "name": "transform",
+      "description": "等比缩小并另存图片，不放大、不覆盖已有文件。支持 JPG/PNG/WebP，JPG 透明背景转白色；输出不复制 EXIF/GPS，暂不处理动画。",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000,
+            "description": "输入图片"
+          },
+          "output": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000,
+            "description": "输出新文件，相对项目路径"
+          },
+          "max_width": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8192
+          },
+          "max_height": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8192
+          },
+          "quality": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 95
+          }
+        },
+        "required": [
+          "path",
+          "output"
+        ],
+        "additionalProperties": false
+      },
+      "effect": "write"
+    }
+  ],
+  "skills": [
+    "luma-image-tools"
+  ],
+  "author": "Luma",
+  "examples": [
+    "在 Work 模式用 $ 选择「图片处理」，描述任务后发送；工具运行前确认审批。"
+  ],
+  "changelog": "1.1.0 / Luma 0.7.0：验证多会话下的工具、配置与工作目录行为；更新兼容范围和 Skill 多任务说明。",
+  "tested_luma": "0.7.0"
+}
