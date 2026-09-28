@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Local Agent Client API",
-    "version": "0.7.7"
+    "version": "0.7.8"
   },
   "paths": {
     "/health": {
@@ -2611,7 +2611,14 @@
               "identity",
               "switch",
               "branch",
-              "suggest"
+              "suggest",
+              "remote-add",
+              "remote-edit",
+              "remote-remove",
+              "fetch",
+              "pull",
+              "push",
+              "test-remote"
             ],
             "title": "Action"
           },
@@ -2657,6 +2664,24 @@
             "type": "string",
             "maxLength": 320,
             "title": "Email",
+            "default": ""
+          },
+          "remote": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Remote",
+            "default": ""
+          },
+          "url": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Url",
+            "default": ""
+          },
+          "remote_token": {
+            "type": "string",
+            "maxLength": 64,
+            "title": "Remote Token",
             "default": ""
           },
           "global_identity": {

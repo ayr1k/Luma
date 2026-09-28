@@ -1,0 +1,8 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const html=fs.readFileSync('local_agent/ui/index.html','utf8');
+const source=html.slice(html.indexOf('function helpInline('),html.indexOf('function renderGitRemote('));
+class Node{constructor(tag,text=''){this.tag=tag;this.text=text;this.children=[];this.attributes={};}append(...nodes){this.children.push(...nodes);}replaceChildren(...nodes){this.children=nodes;}setAttribute(k,v){this.attributes[k]=v;}}
+function reader(text){const body=new Node('div');const context={URL,document:{createElement:t=>new Node(t),createTextNode:t=>new Node('#text',t)},textNode:(t,text='',cls='')=>new Node(t,text)};vm.createContext(context);vm.runInContext(source,context);context.renderHelpMarkdown(body,text);return body;}
+function nodes(n){return [n,...n.children.flatMap(nodes)];}
+test('help renders headings, lists, fences and tables as elements',()=>{const tree=nodes(reader('# Title\n\n## Section\n- one\n- two\n\n1. first\n2. next\n\n```js\nconst x = "<img onerror=bad>";\n```\n\n| A | B |\n| --- | --- |\n| 1 | 2 |'));for(const tag of ['h2','h3','ul','ol','pre','code','table','th','td'])assert.ok(tree.some(n=>n.tag===tag),tag);assert.ok(!tree.some(n=>n.tag==='img'));});
+test('help inline markup escapes HTML and rejects executable links',()=>{const tree=nodes(reader('**bold** `code` [safe](https://example.com) [unsafe](javascript:alert) <script>bad</script>'));assert.ok(tree.some(n=>n.tag==='strong'&&n.text==='bold'));assert.equal(tree.filter(n=>n.tag==='a').length,1);assert.equal(tree.find(n=>n.tag==='a').href,'https://example.com');assert.ok(!tree.some(n=>n.tag==='script'));});

@@ -101,7 +101,7 @@ def test_api_auth_schema_and_draft_only_suggestion(tmp_path,monkeypatch):
         assert c.get('/v1/git/environment').status_code==401
         c.headers['Authorization']='Bearer '+TOKEN
         p=c.post('/v1/projects',json={'path':str(root)}).json()['id'];url='/v1/projects/'+p+'/git'
-        assert c.post(url,json={'action':'push'}).status_code==422
+        assert c.post(url,json={'action':'force-push'}).status_code==422
         assert c.post(url,json={'action':'init','branch':'main'}).status_code==200
         (root/'a').write_text('a');state=c.get(url).json()
         assert c.post(url,json={'action':'stage','root':state['root'],'token':state['token'],'paths':['a']}).status_code==200

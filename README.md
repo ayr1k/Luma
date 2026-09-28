@@ -6,11 +6,11 @@ Luma 是面向 Windows 的桌面 AI Agent，将对话、项目文件、工具执
 
 Luma 采用客户端与推理服务分离的架构：**客户端负责本地操作，模型服务负责推理。** 当前主要面向可信局域网部署，适合个人工作站以及共享模型主机的使用场景。
 
-[下载安装](https://github.com/ayr1k/Luma/releases) · [更新说明](docs/release-0.7.7.md) · [扩展开发指南](docs/extensions.md) · [LTS 政策](docs/lts.md) · [反馈问题](https://github.com/ayr1k/Luma/issues)
+[下载安装](https://github.com/ayr1k/Luma/releases) · [更新说明](docs/release-0.7.8.md) · [扩展开发指南](docs/extensions.md) · [LTS 政策](docs/lts.md) · [反馈问题](https://github.com/ayr1k/Luma/issues)
 
-## 0.7.7 更新
+## 0.7.8 更新
 
-加入独立 Git 页面，支持环境引导、仓库初始化、暂存、提交、历史与本地分支管理。详见 [更新说明](docs/release-0.7.7.md)。
+新增 Git 远程配置与 Fetch/Pull/Push，展示跟踪分支和领先/落后；修复帮助文档排版，新增独立 Git/GitHub 指南。详见 [更新说明](docs/release-0.7.8.md)。
 
 ## 主要功能
 
@@ -20,7 +20,7 @@ Luma 采用客户端与推理服务分离的架构：**客户端负责本地操�
 - **模型连接与配置**：根据服务地址和客户端密钥获取可用模型，在主界面切换模型，配置模型参数并测试连接。
 - **流式对话与附件**：逐步显示模型输出，支持发送图片和文件；具体处理能力取决于模型、网关及文件类型。
 - **本地项目工具**：读取、写入、搜索文件，应用补丁，查看 Git diff，并在审批后执行终端命令。
-- **Git 本地版本管理**：检测 Git 环境与提交身份，暂存/取消暂存文件，保存本地提交，查看历史并创建或切换本地分支；支持模型生成提交说明。
+- **Git 版本管理**：检测 Git 环境与提交身份，暂存/取消暂存文件，保存本地提交，查看历史并创建或切换本地分支；支持模型生成提交说明、远程配置及 Fetch/Pull/Push。
 - **文件与变更预览**：只读文件预览支持语法高亮、行号和换行；支持查看 Agent 文件变更，并在条件满足时回滚。
 - **插件与 Skills**：通过本地 ZIP 或开发目录安装扩展，使用 `/` 选择 Skills、使用 `$` 选择工具插件。
 - **联网搜索**：可启用基于 DDGS 的搜索，效果受网络环境和上游搜索服务可用性影响。
@@ -44,7 +44,7 @@ Luma 采用客户端与推理服务分离的架构：**客户端负责本地操�
 发布页提供 SHA-256 校验文件时，可在 PowerShell 中计算安装包的哈希并与之比较：
 
 ```powershell
-Get-FileHash .\Luma-Setup-0.7.7.exe -Algorithm SHA256
+Get-FileHash .\Luma-Setup-0.7.8.exe -Algorithm SHA256
 ```
 
 当前安装包未进行代码签名。SHA-256 用于核对文件完整性，不能替代发布者身份签名。
@@ -55,7 +55,7 @@ Get-FileHash .\Luma-Setup-0.7.7.exe -Algorithm SHA256
 
 | 渠道 | 定位 | 版本基线 |
 | --- | --- | --- |
-| Latest | 持续引入功能和交互改进 | 本源码对应 0.7.7；已发布版本见 Releases |
+| Latest | 持续引入功能和交互改进 | 本源码对应 0.7.8；已发布版本见 Releases |
 | LTS | 优先维护稳定性和既有插件兼容性 | 0.7.2 LTS |
 
 LTS（Long-Term Support，长期支持版）用于提供变化较少的使用和扩展适配基线。维护重点是重要缺陷、安全问题和必要的兼容修复，不主动引入重大新功能或破坏性接口变化。
@@ -266,9 +266,10 @@ API 的机器可读定义见 [OpenAPI schema](docs/openapi.json)。除健康检�
 
 ## 文档
 
-- [Git 使用说明](docs/git.md)
+- [Git 和 GitHub 支持](docs/git.md)
+- [软件使用说明](docs/manual.md)
 
-- [0.7.7 更新说明](docs/release-0.7.7.md)
+- [0.7.8 更新说明](docs/release-0.7.8.md)
 
 - [0.7.5 更新说明](docs/release-0.7.5.md)
 

@@ -142,7 +142,7 @@ class GitPath(StrictModel):
     path: str = Field(default='', max_length=4096)
 
 class GitAction(StrictModel):
-    action: Literal['init','stage','unstage','commit','identity','switch','branch','suggest']
+    action: Literal['init','stage','unstage','commit','identity','switch','branch','suggest','remote-add','remote-edit','remote-remove','fetch','pull','push','test-remote']
     root: str = Field(default='', max_length=4096)
     token: str = Field(default='', max_length=64)
     paths: list[str] = Field(default_factory=list, max_length=1000)
@@ -150,5 +150,8 @@ class GitAction(StrictModel):
     message: str = Field(default='', max_length=16000)
     name: str = Field(default='', max_length=200)
     email: str = Field(default='', max_length=320)
+    remote: str = Field(default='', max_length=100)
+    url: str = Field(default='', max_length=2000)
+    remote_token: str = Field(default='', max_length=64)
     global_identity: bool = False
     ignore: bool = False
