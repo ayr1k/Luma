@@ -136,3 +136,19 @@ class ExtensionAction(StrictModel):
     enabled: bool = False
     trusted: bool = False
     content: str = Field(default='', max_length=24000)
+
+
+class GitPath(StrictModel):
+    path: str = Field(default='', max_length=4096)
+
+class GitAction(StrictModel):
+    action: Literal['init','stage','unstage','commit','identity','switch','branch','suggest']
+    root: str = Field(default='', max_length=4096)
+    token: str = Field(default='', max_length=64)
+    paths: list[str] = Field(default_factory=list, max_length=1000)
+    branch: str = Field(default='', max_length=200)
+    message: str = Field(default='', max_length=16000)
+    name: str = Field(default='', max_length=200)
+    email: str = Field(default='', max_length=320)
+    global_identity: bool = False
+    ignore: bool = False

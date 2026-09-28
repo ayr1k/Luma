@@ -66,9 +66,9 @@ class Bridge:
                 return {'ok': False, 'error': '来源地址无效'}
             webbrowser.open(url)
             return {'ok': True, 'data': None}
-        routes = {'save-context-settings':('PUT','/v1/context-settings'),'model-profile':('GET','/v1/model-profile'),'save-model-profile':('PUT','/v1/model-profile'),'model-diagnostics':('POST','/v1/model-diagnostics'),'diagnostic-report':('GET','/v1/model-diagnostics/report'),'extensions': ('GET','/v1/extensions'), 'extension-action': ('POST','/v1/extensions'), 'preferences': ('GET', '/v1/preferences'), 'save-preferences': ('PUT', '/v1/preferences'), 'new-chat': ('POST', '/v1/chat'), 'models': ('GET', '/v1/models'), 'select-model': ('PUT', '/v1/models/selection'), 'projects': ('GET', '/v1/projects'), 'connect': ('POST', '/v1/connection/test'),
+        routes = {'git-environment':('GET','/v1/git/environment'),'git-path':('PUT','/v1/git/environment'),'save-context-settings':('PUT','/v1/context-settings'),'model-profile':('GET','/v1/model-profile'),'save-model-profile':('PUT','/v1/model-profile'),'model-diagnostics':('POST','/v1/model-diagnostics'),'diagnostic-report':('GET','/v1/model-diagnostics/report'),'extensions': ('GET','/v1/extensions'), 'extension-action': ('POST','/v1/extensions'), 'preferences': ('GET', '/v1/preferences'), 'save-preferences': ('PUT', '/v1/preferences'), 'new-chat': ('POST', '/v1/chat'), 'models': ('GET', '/v1/models'), 'select-model': ('PUT', '/v1/models/selection'), 'projects': ('GET', '/v1/projects'), 'connect': ('POST', '/v1/connection/test'),
                   'configuration': ('GET', '/v1/configuration'), 'configure': ('PUT', '/v1/configuration')}
-        project_routes = {'draft':('GET','draft'),'save-draft':('PUT','draft'),'fork':('POST','fork'),'context':('GET','context'),'summarize':('POST','summary-tasks'),'apply-context':('PUT','context'),'restore-context':('POST','context/restore'),'new-conversation':('POST','conversations'), 'update-project': ('PUT','metadata'), 'continue': ('POST', 'continue'), 'stop-paused': ('POST', 'stop-paused'), 'session': ('GET', 'session'), 'send': ('POST', 'tasks'), 'revise': ('POST', 'revision-tasks'),
+        project_routes = {'git-status':('GET','git'),'git-action':('POST','git'),'git-file':('GET','git/file'),'git-history':('GET','git/history'),'draft':('GET','draft'),'save-draft':('PUT','draft'),'fork':('POST','fork'),'context':('GET','context'),'summarize':('POST','summary-tasks'),'apply-context':('PUT','context'),'restore-context':('POST','context/restore'),'new-conversation':('POST','conversations'), 'update-project': ('PUT','metadata'), 'continue': ('POST', 'continue'), 'stop-paused': ('POST', 'stop-paused'), 'session': ('GET', 'session'), 'send': ('POST', 'tasks'), 'revise': ('POST', 'revision-tasks'),
             'approve': ('POST', 'approval-tasks'), 'changes': ('GET', 'changes'),
             'review': ('GET', 'review'), 'review-file': ('GET', 'review/file'), 'review-action': ('POST', 'review'),
             'keep': ('POST', 'changes/keep'), 'revert': ('POST', 'changes/revert'),
@@ -105,6 +105,8 @@ class Bridge:
                 kwargs = {'headers': {'Authorization': 'Bearer ' + self._token}}
                 if method == 'GET' and action == 'projects':
                     kwargs['params'] = {'q':(payload or {}).get('q','')}
+                elif method == 'GET' and action in {'git-file','git-history'}:
+                    kwargs['params'] = {k:v for k,v in (payload or {}).items() if k in {'path','area','commit'} and v}
                 elif method == 'GET' and action == 'review-file':
                     kwargs['params'] = {k:v for k,v in (payload or {}).items() if k in {'path','turn'} and v}
                 elif method == 'GET' and action == 'file':

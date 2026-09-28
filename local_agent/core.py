@@ -21,6 +21,7 @@ class AgentCore:
     def __init__(self, state, model, save, max_steps=30, cancel_event=None, options=None, extensions=None):
         self.state, self.model, self.save = state, model, save
         self.extensions = extensions
+        self.git_executable = None
         self.workspace = Path(state['workspace']).resolve()
         self.options = options or Preferences(max_steps=max_steps)
         self.max_steps = self.options.max_steps
@@ -217,7 +218,7 @@ class AgentCore:
             before_content=before.decode('utf-8') if before is not None else None,
             before_bytes=base64.b64encode(before).decode() if before is not None else None,
             before_hash=file_sha256(target), after_hash=file_sha256(target))
-        result = execute_tool(self.workspace, name, raw)
+        result = execute_tool(self.workspace, name, raw, self.git_executable)
         if not result.startswith('ERROR:'):
             after = target.read_bytes() if target.exists() else None
             turn = self.state.get('turn_id')
@@ -391,7 +392,7 @@ class AgentCore:
                     elif name in {'write_file', 'apply_patch'}:
                         result = self.edit(name, args, raw)
                     else:
-                        result = execute_tool(self.workspace, name, raw)
+                        result = execute_tool(self.workspace, name, raw, self.git_executable)
                 except (ValueError, KeyError, TypeError, OSError) as exc:
                     result = f'ERROR: {exc}'
                 self.result(call, result)

@@ -86,10 +86,10 @@ def apply_patch(workspace: Path, path: str, old_text: str, new_text: str):
 
     return f"Successfully patched {path}"
 
-def git_diff(workspace: Path):
+def git_diff(workspace: Path, executable=None):
     try:
         result = subprocess.run(
-            ["git", "diff", "--no-ext-diff", "--no-textconv", "--", "."],
+            [executable or "git", "diff", "--no-ext-diff", "--no-textconv", "--", "."],
             cwd=workspace,
             capture_output=True,
             text=True,
@@ -152,7 +152,7 @@ def search_files(workspace: Path, query: str, path: str = "."):
 
     return "\n".join(results) if results else "(no matches)"
 
-def execute_tool(workspace: Path, name: str, arguments: str):
+def execute_tool(workspace: Path, name: str, arguments: str, git_executable=None):
     args = json.loads(arguments or "{}")
 
     if name == "list_files":
@@ -167,7 +167,7 @@ def execute_tool(workspace: Path, name: str, arguments: str):
         )
 
     if name == "git_diff":
-        return git_diff(workspace)
+        return git_diff(workspace, git_executable)
 
     if name == "read_file":
         return read_file(workspace, args["path"])

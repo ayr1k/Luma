@@ -4,11 +4,11 @@ import subprocess
 from pathlib import Path
 from .tools import safe_path as safe_workspace_file
 
-def get_git_status(workspace: Path) -> str:
+def get_git_status(workspace: Path, executable=None) -> str:
     """Return short Git status for the current workspace."""
     try:
         result = subprocess.run(
-            ["git", "status", "--short"],
+            [executable or "git", "status", "--short"],
             cwd=workspace,
             capture_output=True,
             text=True,
@@ -23,11 +23,11 @@ def get_git_status(workspace: Path) -> str:
     except (FileNotFoundError, subprocess.TimeoutExpired):
         return ""
 
-def get_git_diff(workspace: Path) -> str:
+def get_git_diff(workspace: Path, executable=None) -> str:
     """Return the current unstaged Git diff for the workspace."""
     try:
         result = subprocess.run(
-            ["git", "diff", "--no-ext-diff", "--no-textconv", "--", "."],
+            [executable or "git", "diff", "--no-ext-diff", "--no-textconv", "--", "."],
             cwd=workspace,
             capture_output=True,
             text=True,

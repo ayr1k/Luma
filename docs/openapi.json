@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Local Agent Client API",
-    "version": "0.7.6"
+    "version": "0.7.7"
   },
   "paths": {
     "/health": {
@@ -1995,6 +1995,281 @@
           }
         }
       }
+    },
+    "/v1/git/environment": {
+      "get": {
+        "summary": "Git Environment",
+        "operationId": "git_environment_v1_git_environment_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "Git Path",
+        "operationId": "git_path_v1_git_environment_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GitPath"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/projects/{project_id}/git": {
+      "get": {
+        "summary": "Git Status",
+        "operationId": "git_status_v1_projects__project_id__git_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Git Action",
+        "operationId": "git_action_v1_projects__project_id__git_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GitAction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{project_id}/git/file": {
+      "get": {
+        "summary": "Git File",
+        "operationId": "git_file_v1_projects__project_id__git_file_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Path"
+            }
+          },
+          {
+            "name": "area",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "worktree",
+              "title": "Area"
+            }
+          },
+          {
+            "name": "commit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Commit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{project_id}/git/history": {
+      "get": {
+        "summary": "Git History",
+        "operationId": "git_history_v1_projects__project_id__git_history_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "commit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Commit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2323,6 +2598,97 @@
           "action"
         ],
         "title": "ExtensionAction"
+      },
+      "GitAction": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "init",
+              "stage",
+              "unstage",
+              "commit",
+              "identity",
+              "switch",
+              "branch",
+              "suggest"
+            ],
+            "title": "Action"
+          },
+          "root": {
+            "type": "string",
+            "maxLength": 4096,
+            "title": "Root",
+            "default": ""
+          },
+          "token": {
+            "type": "string",
+            "maxLength": 64,
+            "title": "Token",
+            "default": ""
+          },
+          "paths": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Paths"
+          },
+          "branch": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Branch",
+            "default": ""
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 16000,
+            "title": "Message",
+            "default": ""
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Name",
+            "default": ""
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 320,
+            "title": "Email",
+            "default": ""
+          },
+          "global_identity": {
+            "type": "boolean",
+            "title": "Global Identity",
+            "default": false
+          },
+          "ignore": {
+            "type": "boolean",
+            "title": "Ignore",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "GitAction"
+      },
+      "GitPath": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "maxLength": 4096,
+            "title": "Path",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "GitPath"
       },
       "HTTPValidationError": {
         "properties": {
