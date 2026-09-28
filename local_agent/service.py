@@ -44,7 +44,7 @@ def create_app(settings=None, model=None, on_task_done=None):
             finally:
                 await asyncio.to_thread(tasks.shutdown)
 
-    app = FastAPI(title='Local Agent Client API', version='0.7.5', lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(title='Local Agent Client API', version='0.7.6', lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
     bearer = HTTPBearer(auto_error=False)
     lock = threading.Lock()
 
@@ -110,7 +110,7 @@ def create_app(settings=None, model=None, on_task_done=None):
 
     @app.get('/health')
     def health():
-        return {'ok': True, 'service': 'local-agent-client', 'version': '0.7.5'}
+        return {'ok': True, 'service': 'local-agent-client', 'version': '0.7.6'}
 
     @app.get('/')
     def index():
@@ -189,7 +189,7 @@ def create_app(settings=None, model=None, on_task_done=None):
         with exclusive():
             # Export an allowlist only: no host, model names, keys, prompts, paths or provider text.
             e=profiles.entry(settings)
-            return {'format':'luma-model-diagnostics','version':1,'luma':'0.7.5',
+            return {'format':'luma-model-diagnostics','version':1,'luma':'0.7.6',
                     'parameters':e['parameters'],'manual':e['manual'],'tests':e['tested']}
 
     @app.get('/v1/preferences', dependencies=[Depends(auth)])

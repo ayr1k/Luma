@@ -6,11 +6,11 @@ Luma 是面向 Windows 的桌面 AI Agent，将对话、项目文件、工具执
 
 Luma 采用客户端与推理服务分离的架构：**客户端负责本地操作，模型服务负责推理。** 当前主要面向可信局域网部署，适合个人工作站以及共享模型主机的使用场景。
 
-[下载安装](https://github.com/ayr1k/Luma/releases) · [更新说明](docs/release-0.7.5.md) · [扩展开发指南](docs/extensions.md) · [LTS 政策](docs/lts.md) · [反馈问题](https://github.com/ayr1k/Luma/issues)
+[下载安装](https://github.com/ayr1k/Luma/releases) · [更新说明](docs/release-0.7.6.md) · [扩展开发指南](docs/extensions.md) · [LTS 政策](docs/lts.md) · [反馈问题](https://github.com/ayr1k/Luma/issues)
 
-## 0.7.5 更新
+## 0.7.6 更新
 
-文件变更审阅：按轮次筛选修改清单，查看逐行差异或修改前后对照，逐文件保留与安全撤销。详见 [更新说明](docs/release-0.7.5.md)。
+修复工具卡片文字对齐，统一下拉菜单的主题和交互，修复删除最后一个会话后残留条目的问题。详见 [更新说明](docs/release-0.7.6.md)。
 
 ## 主要功能
 
@@ -43,7 +43,7 @@ Luma 采用客户端与推理服务分离的架构：**客户端负责本地操�
 发布页提供 SHA-256 校验文件时，可在 PowerShell 中计算安装包的哈希并与之比较：
 
 ```powershell
-Get-FileHash .\Luma-Setup-0.7.5.exe -Algorithm SHA256
+Get-FileHash .\Luma-Setup-0.7.6.exe -Algorithm SHA256
 ```
 
 当前安装包未进行代码签名。SHA-256 用于核对文件完整性，不能替代发布者身份签名。
@@ -54,7 +54,7 @@ Get-FileHash .\Luma-Setup-0.7.5.exe -Algorithm SHA256
 
 | 渠道 | 定位 | 版本基线 |
 | --- | --- | --- |
-| Latest | 持续引入功能和交互改进 | 本源码对应 0.7.5；已发布版本见 Releases |
+| Latest | 持续引入功能和交互改进 | 本源码对应 0.7.6；已发布版本见 Releases |
 | LTS | 优先维护稳定性和既有插件兼容性 | 0.7.2 LTS |
 
 LTS（Long-Term Support，长期支持版）用于提供变化较少的使用和扩展适配基线。维护重点是重要缺陷、安全问题和必要的兼容修复，不主动引入重大新功能或破坏性接口变化。
@@ -264,6 +264,8 @@ API 的机器可读定义见 [OpenAPI schema](docs/openapi.json)。除健康检�
 修改代码时，请说明改动目的及验证方法；涉及模型、工具、存储或扩展接口的改动，应补充相应测试并说明兼容性影响。功能建议不代表已纳入发布计划。
 
 ## 文档
+
+- [0.7.6 更新说明](docs/release-0.7.6.md)
 
 - [0.7.5 更新说明](docs/release-0.7.5.md)
 
