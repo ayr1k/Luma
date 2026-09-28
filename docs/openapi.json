@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Local Agent Client API",
-    "version": "0.7.4"
+    "version": "0.7.5"
   },
   "paths": {
     "/health": {
@@ -1709,6 +1709,167 @@
         }
       }
     },
+    "/v1/projects/{project_id}/review": {
+      "get": {
+        "summary": "Review List",
+        "operationId": "review_list_v1_projects__project_id__review_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Review Action",
+        "operationId": "review_action_v1_projects__project_id__review_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{project_id}/review/file": {
+      "get": {
+        "summary": "Review File",
+        "operationId": "review_file_v1_projects__project_id__review_file_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 4096,
+              "title": "Path"
+            }
+          },
+          {
+            "name": "turn",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 64
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Turn"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/projects/{project_id}/changes": {
       "get": {
         "summary": "Changes",
@@ -2635,6 +2796,57 @@
         "additionalProperties": false,
         "type": "object",
         "title": "ProjectUpdate"
+      },
+      "ReviewAction": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "keep",
+              "revert"
+            ],
+            "title": "Action"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewSelection"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "minItems": 1,
+            "title": "Files"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "action",
+          "files"
+        ],
+        "title": "ReviewAction"
+      },
+      "ReviewSelection": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "maxLength": 4096,
+            "minLength": 1,
+            "title": "Path"
+          },
+          "revision": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "path",
+          "revision"
+        ],
+        "title": "ReviewSelection"
       },
       "Session": {
         "properties": {

@@ -219,6 +219,15 @@ class AgentCore:
             before_hash=file_sha256(target), after_hash=file_sha256(target))
         result = execute_tool(self.workspace, name, raw)
         if not result.startswith('ERROR:'):
+            after = target.read_bytes() if target.exists() else None
+            turn = self.state.get('turn_id')
+            if turn and before != after:
+                rounds = snapshot.setdefault('review_rounds', {})
+                entry = rounds.setdefault(turn, dict(existed_before=before is not None,
+                    before_bytes=base64.b64encode(before).decode() if before is not None else None,
+                    created_at=datetime.now(timezone.utc).isoformat(),
+                    label=next((str(m.get('content', '任务'))[:100] for m in reversed(self.state['visible_messages']) if m['role']=='user'), '任务')))
+                entry['after_bytes'] = base64.b64encode(after).decode() if after is not None else None
             snapshot['after_hash'] = file_sha256(target)
             self.state['agent_changes'][key] = snapshot
         return result
@@ -447,25 +456,9 @@ class AgentCore:
         return self.state
 
     def revert(self):
-        if self.state.get('pending_command') or self.state['tool_queue']:
-            raise ValueError('Finish pending work before reverting')
-        reverted, skipped = [], []
-        for key, change in list(self.state['agent_changes'].items()):
-            target = safe_path(self.workspace, key)
-            if file_sha256(target) != change.get('after_hash'):
-                skipped.append(key)
-                continue
-            if change['existed_before']:
-                if change.get('before_bytes') is not None:
-                    target.write_bytes(base64.b64decode(change['before_bytes']))
-                elif change.get('before_content') is not None:
-                    target.write_text(change['before_content'], encoding='utf-8')
-                else:
-                    skipped.append(key)
-                    continue
-            elif target.exists():
-                target.unlink()
-            del self.state['agent_changes'][key]
-            reverted.append(key)
-        self.persist()
-        return {'reverted': reverted, 'skipped': skipped}
+        from .review import overview, resolve
+        rows = overview(self.state)['files']
+        if not rows:
+            return {'reverted': [], 'skipped': []}
+        result = resolve(self, 'revert', [{'path': r['path'], 'revision': r['revision']} for r in rows])
+        return {'reverted': result['done'], 'skipped': [r['path'] for r in result['skipped']]}

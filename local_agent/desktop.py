@@ -70,6 +70,7 @@ class Bridge:
                   'configuration': ('GET', '/v1/configuration'), 'configure': ('PUT', '/v1/configuration')}
         project_routes = {'draft':('GET','draft'),'save-draft':('PUT','draft'),'fork':('POST','fork'),'context':('GET','context'),'summarize':('POST','summary-tasks'),'apply-context':('PUT','context'),'restore-context':('POST','context/restore'),'new-conversation':('POST','conversations'), 'update-project': ('PUT','metadata'), 'continue': ('POST', 'continue'), 'stop-paused': ('POST', 'stop-paused'), 'session': ('GET', 'session'), 'send': ('POST', 'tasks'), 'revise': ('POST', 'revision-tasks'),
             'approve': ('POST', 'approval-tasks'), 'changes': ('GET', 'changes'),
+            'review': ('GET', 'review'), 'review-file': ('GET', 'review/file'), 'review-action': ('POST', 'review'),
             'keep': ('POST', 'changes/keep'), 'revert': ('POST', 'changes/revert'),
             'reset': ('POST', 'session/reset'), 'files': ('GET', 'files'), 'file': ('GET', 'file')}
         if action == 'delete-conversation':
@@ -104,6 +105,8 @@ class Bridge:
                 kwargs = {'headers': {'Authorization': 'Bearer ' + self._token}}
                 if method == 'GET' and action == 'projects':
                     kwargs['params'] = {'q':(payload or {}).get('q','')}
+                elif method == 'GET' and action == 'review-file':
+                    kwargs['params'] = {k:v for k,v in (payload or {}).items() if k in {'path','turn'} and v}
                 elif method == 'GET' and action == 'file':
                     kwargs['params'] = {'path': (payload or {}).get('path', '')}
                 elif method in {'POST', 'PUT'}:

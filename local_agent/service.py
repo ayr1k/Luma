@@ -44,7 +44,7 @@ def create_app(settings=None, model=None, on_task_done=None):
             finally:
                 await asyncio.to_thread(tasks.shutdown)
 
-    app = FastAPI(title='Local Agent Client API', version='0.7.4', lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(title='Local Agent Client API', version='0.7.5', lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
     bearer = HTTPBearer(auto_error=False)
     lock = threading.Lock()
 
@@ -110,7 +110,7 @@ def create_app(settings=None, model=None, on_task_done=None):
 
     @app.get('/health')
     def health():
-        return {'ok': True, 'service': 'local-agent-client', 'version': '0.7.4'}
+        return {'ok': True, 'service': 'local-agent-client', 'version': '0.7.5'}
 
     @app.get('/')
     def index():
@@ -189,7 +189,7 @@ def create_app(settings=None, model=None, on_task_done=None):
         with exclusive():
             # Export an allowlist only: no host, model names, keys, prompts, paths or provider text.
             e=profiles.entry(settings)
-            return {'format':'luma-model-diagnostics','version':1,'luma':'0.7.4',
+            return {'format':'luma-model-diagnostics','version':1,'luma':'0.7.5',
                     'parameters':e['parameters'],'manual':e['manual'],'tests':e['tested']}
 
     @app.get('/v1/preferences', dependencies=[Depends(auth)])
@@ -500,6 +500,26 @@ def create_app(settings=None, model=None, on_task_done=None):
         with exclusive():
             return core(project_id).approve(body.approval_id, body.allow)
 
+    @app.get('/v1/projects/{project_id}/review', dependencies=[Depends(auth)])
+    def review_list(project_id: str):
+        from .review import overview
+        with exclusive():
+            return overview(core(project_id).state)
+
+    @app.get('/v1/projects/{project_id}/review/file', dependencies=[Depends(auth)])
+    def review_file(project_id: str, path: str = Query(max_length=4096), turn: str | None = Query(default=None, max_length=64)):
+        from .review import detail
+        with exclusive():
+            return detail(core(project_id).state, path, turn)
+
+    from .schemas import ReviewAction
+    @app.post('/v1/projects/{project_id}/review', dependencies=[Depends(auth)])
+    def review_action(project_id: str, body: ReviewAction):
+        from .review import resolve
+        with exclusive():
+            no_sibling_pending(project_id)
+            return resolve(core(project_id), body.action, [r.model_dump() for r in body.files])
+
     @app.get('/v1/projects/{project_id}/changes', dependencies=[Depends(auth)])
     def changes(project_id: str):
         with exclusive():
@@ -517,8 +537,9 @@ def create_app(settings=None, model=None, on_task_done=None):
     @app.post('/v1/projects/{project_id}/changes/keep', dependencies=[Depends(auth)])
     def keep(project_id: str):
         with exclusive():
+            no_sibling_pending(project_id)
             engine = core(project_id)
-            if engine.state.get('pending_command') or engine.state['tool_queue']:
+            if engine.state.get('pending_command') or engine.state['tool_queue'] or engine.state.get('status') in {'running','paused','interrupted'}:
                 raise ValueError('Finish pending work before accepting changes')
             engine.state['agent_changes'] = {}
             engine.persist()

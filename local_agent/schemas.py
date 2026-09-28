@@ -98,6 +98,14 @@ class Session(BaseModel):
     pause_reason: str | None = None
     no_tool_streak: int
 
+class ReviewSelection(StrictModel):
+    path: str = Field(min_length=1, max_length=4096)
+    revision: str = Field(min_length=64, max_length=64)
+
+class ReviewAction(StrictModel):
+    action: Literal['keep', 'revert']
+    files: list[ReviewSelection] = Field(min_length=1, max_length=1000)
+
 class ConnectionRequest(StrictModel):
     inference: bool = False
 
