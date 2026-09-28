@@ -128,7 +128,7 @@ class ModelSelection(StrictModel):
 
 class ExtensionAction(StrictModel):
     config: dict[str, Any] = Field(default_factory=dict)
-    action: Literal['details','diagnose','validate','export-config','preview-config','import-config','inspect','install','toggle','uninstall','read-skill','save-skill','delete-skill','configure','reset-appearance']
+    action: Literal['rollback','sync-bundled','details','diagnose','validate','export-config','preview-config','import-config','inspect','install','toggle','uninstall','read-skill','save-skill','delete-skill','configure','reset-appearance']
     id: str = Field(default='', max_length=150)
     data: str | None = Field(default=None, max_length=11200000, repr=False)
     directory: str | None = Field(default=None, max_length=2000)
@@ -155,3 +155,13 @@ class GitAction(StrictModel):
     remote_token: str = Field(default='', max_length=64)
     global_identity: bool = False
     ignore: bool = False
+
+
+class GitClone(StrictModel):
+    url: str = Field(min_length=1,max_length=2000)
+    parent: str = Field(min_length=1,max_length=4096)
+    name: str = Field(min_length=1,max_length=100)
+
+class UpdateOptions(StrictModel):
+    automatic: bool = True
+    channel: Literal['Latest','LTS'] = 'Latest'

@@ -22,5 +22,7 @@
   ],
   "skills": [
     "project-overview"
-  ]
+  ],
+  "max_luma": "0.8.99",
+  "tested_luma": "0.8.0"
 }

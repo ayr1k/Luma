@@ -1,9 +1,9 @@
 ---
-version: 1.1.0
+version: 1.2.0
 author: Luma
 min_luma: 0.6.2
-max_luma: 0.7.99
-tested_luma: 0.7.0
+max_luma: 0.8.99
+tested_luma: 0.8.0
 name: 文档读取
 description: 分段读取 PDF、DOCX 与文本，定位关键词。
 ---

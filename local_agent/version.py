@@ -1,0 +1,5 @@
+VERSION = "0.8.0"
+VERSION_TUPLE = (0, 8, 0)
+CODENAME = "SoHo"
+CHANNEL = "Latest"
+LTS_VERSION = "0.7.2"

@@ -16,7 +16,7 @@ from test_tasks import setup,register,wait
 
 def test_actual_plugin_limit_boundaries(tmp_path):
     e=Extensions(tmp_path/'data');folder=tmp_path/'package';folder.mkdir()
-    manifest={'id':'plugin-a','name':'Test','description':'fixture','version':'1.0.0','api_version':1,
+    manifest={'id':'plugin-a','name':'Test','description':'fixture','version':'1.0.0','api_version':1,'max_luma':'0.8.99',
         'runtime':'python','permissions':['local-code'],'entrypoint':'main.py',
         'tools':[{'name':'sample','description':'fixture','input_schema':{'type':'object'}}]}
     (folder/'main.py').write_text('print(1)',encoding='utf-8')

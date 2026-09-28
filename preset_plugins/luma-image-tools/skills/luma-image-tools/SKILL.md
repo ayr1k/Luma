@@ -1,9 +1,9 @@
 ---
-version: 1.1.0
+version: 1.2.0
 author: Luma
 min_luma: 0.6.2
-max_luma: 0.7.99
-tested_luma: 0.7.0
+max_luma: 0.8.99
+tested_luma: 0.8.0
 name: 图片处理
 description: 查看图片信息、等比缩放、转换 JPG/PNG/WebP。
 ---

@@ -1,9 +1,9 @@
 ---
-version: 1.1.0
+version: 1.2.0
 author: Luma
 min_luma: 0.6.1
-max_luma: 0.7.99
-tested_luma: 0.7.0
+max_luma: 0.8.99
+tested_luma: 0.8.0
 name: 文档总结与行动项
 description: 总结附件、会议记录和长文本
 ---

@@ -7,6 +7,8 @@ import re
 import shutil
 import subprocess
 import tempfile
+import time
+import uuid
 from pathlib import Path, PurePosixPath
 from .storage import atomic_json
 
@@ -16,6 +18,7 @@ IGNORE = '# Luma: local credentials and generated files\n.env\n.env.*\n!.env.exa
 class GitManager:
     def __init__(self, data_dir):
         self.config = Path(data_dir) / 'git-settings.json'
+        self.log_path = Path(data_dir) / 'git-operations.json'
 
     def executable(self):
         try:
@@ -338,3 +341,40 @@ class GitManager:
             else:hint='远程操作失败。请检查地址、网络与权限；超时后先刷新并 Fetch 核对实际状态。'
             raise ValueError(hint+'\n'+self.redact(detail)) from None
         return {'message':{'test-remote':'远程连接成功（已验证读取权限，写入权限以实际 Push 结果为准）。','fetch':'已获取远程信息，本地工作文件未改变。','pull':'已完成快进拉取。','push':'已推送当前分支并设置跟踪分支。'}[action]}
+
+    def record(self,action,root,ok,message):
+        try:rows=json.loads(self.log_path.read_text(encoding='utf-8'))
+        except (ValueError,OSError):rows=[]
+        if not isinstance(rows,list):rows=[]
+        rows.append({'time':time.time(),'action':action,'workspace':str(root),'ok':ok,'message':self.redact(str(message))[:1500]})
+        atomic_json(self.log_path,rows[-50:])
+
+    def operations(self,workspace=None):
+        try:rows=json.loads(self.log_path.read_text(encoding='utf-8'))
+        except (ValueError,OSError):return []
+        if not isinstance(rows,list):return []
+        return [r for r in rows if workspace is None or r.get('workspace')==str(workspace)][::-1]
+
+    def clone(self,url,parent,name):
+        url=self.validate_url(url)
+        parent=Path(parent).expanduser()
+        if not parent.is_absolute() or not parent.is_dir():raise ValueError('请选择已有的本地父文件夹。')
+        parent=parent.resolve()
+        if not re.fullmatch(r'[^<>:"/\\|?*\x00-\x1f]{1,100}',name) or name in {'.','..'} or name.endswith((' ','.')):
+            raise ValueError('新文件夹名称无效。')
+        if name.split('.')[0].upper() in {'CON','PRN','AUX','NUL',*[f'COM{i}' for i in range(1,10)],*[f'LPT{i}' for i in range(1,10)]}:raise ValueError('不能使用系统保留名称。')
+        target=parent/name
+        if target.exists():raise ValueError('目标已经存在，请使用新的文件夹名称。')
+        stage=parent/('.luma-clone-'+uuid.uuid4().hex)
+        stage.mkdir()
+        try:
+            with tempfile.TemporaryDirectory(prefix='luma-empty-hooks-') as hooks:
+                self.run(parent,'-c','core.hooksPath='+hooks,'-c','protocol.file.allow=always',
+                         'clone','--no-recurse-submodules','--',url,str(stage),network=True)
+            if target.exists():raise ValueError('目标文件夹已被创建，请检查临时克隆目录。')
+            stage.rename(target)
+            self.record('clone',target,True,'克隆完成');return str(target)
+        except ValueError as exc:
+            hint=self.redact(str(exc))+'；未添加为项目。临时目录保留在 '+str(stage)
+            self.record('clone',target,False,hint)
+            raise ValueError(hint) from None

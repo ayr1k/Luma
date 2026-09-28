@@ -1,9 +1,9 @@
 ---
-version: 1.1.0
+version: 1.2.0
 author: Luma
 min_luma: 0.6.1
-max_luma: 0.7.99
-tested_luma: 0.7.0
+max_luma: 0.8.99
+tested_luma: 0.8.0
 name: 写作与润色
 description: 起草、改写邮件、说明和中文文案
 ---

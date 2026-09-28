@@ -1,4 +1,7 @@
-﻿#ifndef SourceDir
+﻿#ifndef LTSPresetSource
+  #define LTSPresetSource "..\..\lts072-source"
+#endif
+#ifndef SourceDir
   #define SourceDir "..\dist\Luma"
 #endif
 #ifndef OutputDir
@@ -11,7 +14,7 @@
 AppId={{F0720B19-4EE9-42AE-B5C0-3FF362DB8B3A}
 AppName=Luma
 AppVersion={code:SelectedVersion}
-VersionInfoVersion=0.7.8
+VersionInfoVersion=0.8.0
 AppVerName={code:SelectedName}
 DefaultDirName={localappdata}\Programs\LocalAgent
 DefaultGroupName=Luma
@@ -20,12 +23,14 @@ ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
 MinVersion=10.0
 OutputDir={#OutputDir}
-OutputBaseFilename=Luma-Setup-0.7.8
+OutputBaseFilename=Luma-Setup-0.8.0
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
 UninstallDisplayIcon={app}\Luma.exe
 [InstallDelete]
+Type: filesandordirs; Name: "{app}\Bundled-Plugins"
+Type: filesandordirs; Name: "{app}\Preset-Skills"
 Type: files; Name: "{app}\LocalAgent.exe"
 Type: files; Name: "{autodesktop}\Local Agent.lnk"
 Type: files; Name: "{userprograms}\Local Agent\Local Agent.lnk"
@@ -61,27 +66,48 @@ Source: "..\LICENSE"; DestDir: "{app}"; Components: core; Flags: ignoreversion
 Source: "..\docs\phosphor-LICENSE.txt"; DestDir: "{app}\licenses"; Components: core; Flags: ignoreversion
 Source: "{#SourceDir}\*"; Excludes: "Bundled-Plugins\*,Preset-Skills\*"; DestDir: "{app}"; Components: core; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLatest
 Source: "{#LTSSourceDir}\*"; Excludes: "Bundled-Plugins\*,Preset-Skills\*"; DestDir: "{app}"; Components: core; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLTS
-Source: "..\presets\luma-writing\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-writing"; Components: skills\luma_writing; Flags: onlyifdoesntexist uninsneveruninstall
-Source: "..\presets\luma-writing\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-writing"; Components: skills\luma_writing; Flags: ignoreversion
-Source: "..\presets\luma-code-review\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-code-review"; Components: skills\luma_code_review; Flags: onlyifdoesntexist uninsneveruninstall
-Source: "..\presets\luma-code-review\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-code-review"; Components: skills\luma_code_review; Flags: ignoreversion
-Source: "..\presets\luma-debugging\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-debugging"; Components: skills\luma_debugging; Flags: onlyifdoesntexist uninsneveruninstall
-Source: "..\presets\luma-debugging\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-debugging"; Components: skills\luma_debugging; Flags: ignoreversion
-Source: "..\presets\luma-implementation-plan\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-implementation-plan"; Components: skills\luma_implementation_plan; Flags: onlyifdoesntexist uninsneveruninstall
-Source: "..\presets\luma-implementation-plan\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-implementation-plan"; Components: skills\luma_implementation_plan; Flags: ignoreversion
-Source: "..\presets\luma-document-summary\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-document-summary"; Components: skills\luma_document_summary; Flags: onlyifdoesntexist uninsneveruninstall
-Source: "..\presets\luma-document-summary\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-document-summary"; Components: skills\luma_document_summary; Flags: ignoreversion
-Source: "..\preset_plugins\luma-project-overview\*"; DestDir: "{app}\Bundled-Plugins\luma-project-overview"; Components: plugins\luma_project_overview; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\preset_plugins\luma-document-reader\*"; DestDir: "{app}\Bundled-Plugins\luma-document-reader"; Components: plugins\luma_document_reader; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\preset_plugins\luma-image-tools\*"; DestDir: "{app}\Bundled-Plugins\luma-image-tools"; Components: plugins\luma_image_tools; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\preset_plugins\luma-file-organizer\*"; DestDir: "{app}\Bundled-Plugins\luma-file-organizer"; Components: plugins\luma_file_organizer; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\preset_plugins\luma-palette\*"; DestDir: "{app}\Bundled-Plugins\luma-palette"; Components: appearance\luma_palette; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\preset_plugins\luma-typography\*"; DestDir: "{app}\Bundled-Plugins\luma-typography"; Components: appearance\luma_typography; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\preset_plugins\luma-icons\*"; DestDir: "{app}\Bundled-Plugins\luma-icons"; Components: appearance\luma_icons; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\preset_plugins\luma-material\*"; DestDir: "{app}\Bundled-Plugins\luma-material"; Components: appearance\luma_material; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\preset_plugins\luma-widget\*"; DestDir: "{app}\Bundled-Plugins\luma-widget"; Components: software\luma_widget; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\preset_plugins\luma-hotkey\*"; DestDir: "{app}\Bundled-Plugins\luma-hotkey"; Components: software\luma_hotkey; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\preset_plugins\luma-snippets\*"; DestDir: "{app}\Bundled-Plugins\luma-snippets"; Components: software\luma_snippets; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\presets\luma-writing\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-writing"; Components: skills\luma_writing; Flags: onlyifdoesntexist uninsneveruninstall; Check: IsLatest
+Source: "{#LTSPresetSource}\presets\luma-writing\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-writing"; Components: skills\luma_writing; Flags: onlyifdoesntexist uninsneveruninstall; Check: IsLTS
+Source: "..\presets\luma-writing\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-writing"; Components: skills\luma_writing; Flags: ignoreversion; Check: IsLatest
+Source: "{#LTSPresetSource}\presets\luma-writing\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-writing"; Components: skills\luma_writing; Flags: ignoreversion; Check: IsLTS
+Source: "..\presets\luma-code-review\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-code-review"; Components: skills\luma_code_review; Flags: onlyifdoesntexist uninsneveruninstall; Check: IsLatest
+Source: "{#LTSPresetSource}\presets\luma-code-review\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-code-review"; Components: skills\luma_code_review; Flags: onlyifdoesntexist uninsneveruninstall; Check: IsLTS
+Source: "..\presets\luma-code-review\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-code-review"; Components: skills\luma_code_review; Flags: ignoreversion; Check: IsLatest
+Source: "{#LTSPresetSource}\presets\luma-code-review\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-code-review"; Components: skills\luma_code_review; Flags: ignoreversion; Check: IsLTS
+Source: "..\presets\luma-debugging\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-debugging"; Components: skills\luma_debugging; Flags: onlyifdoesntexist uninsneveruninstall; Check: IsLatest
+Source: "{#LTSPresetSource}\presets\luma-debugging\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-debugging"; Components: skills\luma_debugging; Flags: onlyifdoesntexist uninsneveruninstall; Check: IsLTS
+Source: "..\presets\luma-debugging\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-debugging"; Components: skills\luma_debugging; Flags: ignoreversion; Check: IsLatest
+Source: "{#LTSPresetSource}\presets\luma-debugging\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-debugging"; Components: skills\luma_debugging; Flags: ignoreversion; Check: IsLTS
+Source: "..\presets\luma-implementation-plan\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-implementation-plan"; Components: skills\luma_implementation_plan; Flags: onlyifdoesntexist uninsneveruninstall; Check: IsLatest
+Source: "{#LTSPresetSource}\presets\luma-implementation-plan\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-implementation-plan"; Components: skills\luma_implementation_plan; Flags: onlyifdoesntexist uninsneveruninstall; Check: IsLTS
+Source: "..\presets\luma-implementation-plan\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-implementation-plan"; Components: skills\luma_implementation_plan; Flags: ignoreversion; Check: IsLatest
+Source: "{#LTSPresetSource}\presets\luma-implementation-plan\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-implementation-plan"; Components: skills\luma_implementation_plan; Flags: ignoreversion; Check: IsLTS
+Source: "..\presets\luma-document-summary\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-document-summary"; Components: skills\luma_document_summary; Flags: onlyifdoesntexist uninsneveruninstall; Check: IsLatest
+Source: "{#LTSPresetSource}\presets\luma-document-summary\SKILL.md"; DestDir: "{code:SkillsDirectory}\luma-document-summary"; Components: skills\luma_document_summary; Flags: onlyifdoesntexist uninsneveruninstall; Check: IsLTS
+Source: "..\presets\luma-document-summary\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-document-summary"; Components: skills\luma_document_summary; Flags: ignoreversion; Check: IsLatest
+Source: "{#LTSPresetSource}\presets\luma-document-summary\SKILL.md"; DestDir: "{app}\Preset-Skills\luma-document-summary"; Components: skills\luma_document_summary; Flags: ignoreversion; Check: IsLTS
+Source: "..\preset_plugins\luma-project-overview\*"; DestDir: "{app}\Bundled-Plugins\luma-project-overview"; Components: plugins\luma_project_overview; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLatest
+Source: "{#LTSPresetSource}\preset_plugins\luma-project-overview\*"; DestDir: "{app}\Bundled-Plugins\luma-project-overview"; Components: plugins\luma_project_overview; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLTS
+Source: "..\preset_plugins\luma-document-reader\*"; DestDir: "{app}\Bundled-Plugins\luma-document-reader"; Components: plugins\luma_document_reader; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLatest
+Source: "{#LTSPresetSource}\preset_plugins\luma-document-reader\*"; DestDir: "{app}\Bundled-Plugins\luma-document-reader"; Components: plugins\luma_document_reader; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLTS
+Source: "..\preset_plugins\luma-image-tools\*"; DestDir: "{app}\Bundled-Plugins\luma-image-tools"; Components: plugins\luma_image_tools; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLatest
+Source: "{#LTSPresetSource}\preset_plugins\luma-image-tools\*"; DestDir: "{app}\Bundled-Plugins\luma-image-tools"; Components: plugins\luma_image_tools; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLTS
+Source: "..\preset_plugins\luma-file-organizer\*"; DestDir: "{app}\Bundled-Plugins\luma-file-organizer"; Components: plugins\luma_file_organizer; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLatest
+Source: "{#LTSPresetSource}\preset_plugins\luma-file-organizer\*"; DestDir: "{app}\Bundled-Plugins\luma-file-organizer"; Components: plugins\luma_file_organizer; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLTS
+Source: "..\preset_plugins\luma-palette\*"; DestDir: "{app}\Bundled-Plugins\luma-palette"; Components: appearance\luma_palette; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLatest
+Source: "{#LTSPresetSource}\preset_plugins\luma-palette\*"; DestDir: "{app}\Bundled-Plugins\luma-palette"; Components: appearance\luma_palette; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLTS
+Source: "..\preset_plugins\luma-typography\*"; DestDir: "{app}\Bundled-Plugins\luma-typography"; Components: appearance\luma_typography; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLatest
+Source: "{#LTSPresetSource}\preset_plugins\luma-typography\*"; DestDir: "{app}\Bundled-Plugins\luma-typography"; Components: appearance\luma_typography; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLTS
+Source: "..\preset_plugins\luma-icons\*"; DestDir: "{app}\Bundled-Plugins\luma-icons"; Components: appearance\luma_icons; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLatest
+Source: "{#LTSPresetSource}\preset_plugins\luma-icons\*"; DestDir: "{app}\Bundled-Plugins\luma-icons"; Components: appearance\luma_icons; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLTS
+Source: "..\preset_plugins\luma-material\*"; DestDir: "{app}\Bundled-Plugins\luma-material"; Components: appearance\luma_material; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLatest
+Source: "{#LTSPresetSource}\preset_plugins\luma-material\*"; DestDir: "{app}\Bundled-Plugins\luma-material"; Components: appearance\luma_material; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLTS
+Source: "..\preset_plugins\luma-widget\*"; DestDir: "{app}\Bundled-Plugins\luma-widget"; Components: software\luma_widget; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLatest
+Source: "{#LTSPresetSource}\preset_plugins\luma-widget\*"; DestDir: "{app}\Bundled-Plugins\luma-widget"; Components: software\luma_widget; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLTS
+Source: "..\preset_plugins\luma-hotkey\*"; DestDir: "{app}\Bundled-Plugins\luma-hotkey"; Components: software\luma_hotkey; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLatest
+Source: "{#LTSPresetSource}\preset_plugins\luma-hotkey\*"; DestDir: "{app}\Bundled-Plugins\luma-hotkey"; Components: software\luma_hotkey; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLTS
+Source: "..\preset_plugins\luma-snippets\*"; DestDir: "{app}\Bundled-Plugins\luma-snippets"; Components: software\luma_snippets; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLatest
+Source: "{#LTSPresetSource}\preset_plugins\luma-snippets\*"; DestDir: "{app}\Bundled-Plugins\luma-snippets"; Components: software\luma_snippets; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsLTS
 [Icons]
 Name: "{group}\Luma"; Filename: "{app}\Luma.exe"
 Name: "{autodesktop}\Luma"; Filename: "{app}\Luma.exe"; Tasks: desktopicon
@@ -100,18 +126,18 @@ function IsLatest: Boolean;
 begin Result := not IsLTS; end;
 function SelectedVersion(Param: String): String;
 begin
-  if IsLTS then Result := '0.7.2' else Result := '0.7.8';
+  if IsLTS then Result := '0.7.2' else Result := '0.8.0';
 end;
 function SelectedName(Param: String): String;
 begin
-  if IsLTS then Result := 'Luma 0.7.2 LTS' else Result := 'Luma 0.7.8 Latest';
+  if IsLTS then Result := 'Luma 0.7.2 LTS' else Result := 'Luma 0.8.0 Latest';
 end;
 procedure InitializeWizard;
 begin
   ChannelPage := CreateInputOptionPage(wpWelcome, '选择更新渠道',
     'Latest 或长期支持版 LTS',
     'Latest 提供最新功能；LTS 以稳定使用和插件兼容为优先。覆盖切换前请退出托盘并备份用户数据。两条渠道共用安装位置，不能同时运行。', True, False);
-  ChannelPage.Add('Latest 0.7.8 — 远程 Git 同步与帮助阅读器');
+  ChannelPage.Add('Latest 0.8.0 — SoHo · Git 与扩展管理');
   ChannelPage.Add('LTS 0.7.2 — 首个长期支持锚点');
   ChannelPage.SelectedValueIndex := 0;
   if Lowercase(ExpandConstant('{param:CHANNEL|latest}')) = 'lts' then ChannelPage.SelectedValueIndex := 1;

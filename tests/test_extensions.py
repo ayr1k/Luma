@@ -48,7 +48,7 @@ def test_duplicate_paths_and_symlink_and_oversized_package(tmp_path):
 
 def test_compatibility_schema_and_preview_pin(tmp_path):
     e=Extensions(tmp_path);files=e.package_files(directory=str(EXAMPLES/'project-stats'))
-    m=json.loads(files['plugin.json']);m['min_luma']='0.8.0';files['plugin.json']=json.dumps(m).encode()
+    m=json.loads(files['plugin.json']);m['min_luma']='0.9.0';files['plugin.json']=json.dumps(m).encode()
     with pytest.raises(ValueError):e.inspect(data=zipped(files))
     with pytest.raises(ValueError):e.install(directory=str(EXAMPLES/'project-stats'),expected_digest='wrong')
     assert not e.list()['plugins']

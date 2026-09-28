@@ -13,7 +13,7 @@ $releaseRoot = Join-Path $projectRoot "dist\$stamp"
 if ($LASTEXITCODE -ne 0) { throw 'Executable build failed' }
 & $PythonExe -m PyInstaller --noconfirm --distpath (Join-Path $releaseRoot 'lts') --workpath (Join-Path $buildRoot 'lts') (Join-Path $ltsRoot 'packaging\LocalAgent.spec')
 if ($LASTEXITCODE -ne 0) { throw 'LTS executable build failed' }
-& $InnoCompiler ('/DSourceDir=' + (Join-Path $releaseRoot 'latest\Luma')) ('/DLTSSourceDir=' + (Join-Path $releaseRoot 'lts\Luma')) ('/DOutputDir=' + $releaseRoot) (Join-Path $projectRoot 'packaging\installer-channels.iss')
+& $InnoCompiler ('/DLTSPresetSource=' + $ltsRoot) ('/DSourceDir=' + (Join-Path $releaseRoot 'latest\Luma')) ('/DLTSSourceDir=' + (Join-Path $releaseRoot 'lts\Luma')) ('/DOutputDir=' + $releaseRoot) (Join-Path $projectRoot 'packaging\installer-channels.iss')
 if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
 $installers = @(Get-ChildItem -LiteralPath $releaseRoot -Filter 'Luma-Setup-*.exe')
 if ($installers.Count -ne 1) { throw 'Expected one combined installer' }

@@ -101,8 +101,8 @@ def test_bundle_import_update_removal_and_local_replacement(tmp_path):
     assert len(e.list()['plugins'])==11 and all(not p['enabled'] and p['origin']=='bundled' for p in e.list()['plugins'])
     key='luma-project-overview';e.toggle(key,True,True);e.sync_bundled(bundles)
     assert e.state()['plugins'][key]['enabled']
-    p=bundles/key/'plugin.json';m=json.loads(p.read_text(encoding='utf-8'));m['version']='1.0.1';p.write_text(json.dumps(m),encoding='utf-8')
-    e.sync_bundled(bundles);assert not e.state()['plugins'][key]['enabled'] and e.state()['plugins'][key]['manifest']['version']=='1.0.1'
+    p=bundles/key/'plugin.json';m=json.loads(p.read_text(encoding='utf-8'));m['version']='1.2.1';p.write_text(json.dumps(m),encoding='utf-8')
+    e.sync_bundled(bundles);assert not e.state()['plugins'][key]['enabled'] and e.state()['plugins'][key]['manifest']['version']=='1.2.1'
     e.uninstall(key);e.sync_bundled(bundles);assert key not in e.state()['plugins']
     key='luma-image-tools';preview=e.inspect(directory=str(bundles/key));e.install(directory=str(bundles/key),expected_digest=preview['digest'])
     e.toggle(key,True,True);e.sync_bundled(bundles);assert e.state()['plugins'][key]['origin']=='local' and e.state()['plugins'][key]['enabled']

@@ -2,10 +2,10 @@
   "id": "luma-project-overview",
   "name": "项目概览",
   "description": "了解项目结构、文件类型与配置入口。",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "api_version": 1,
   "min_luma": "0.6.2",
-  "max_luma": "0.7.99",
+  "max_luma": "0.8.99",
   "category": "tools",
   "runtime": "python",
   "entrypoint": "main.py",
@@ -44,6 +44,6 @@
   "examples": [
     "在 Work 模式用 $ 选择「项目概览」，描述任务后发送；工具运行前确认审批。"
   ],
-  "changelog": "1.1.0 / Luma 0.7.0：验证多会话下的工具、配置与工作目录行为；更新兼容范围和 Skill 多任务说明。",
-  "tested_luma": "0.7.0"
+  "changelog": "1.2.0 / Luma 0.8.0 SoHo：重新检查工具、贡献配置与 Skill；更新兼容范围。支持保留配置的预置包升级。",
+  "tested_luma": "0.8.0"
 }

@@ -6,5 +6,7 @@
   "api_version": 1,
   "skills": [
     "clear-writing"
-  ]
+  ],
+  "max_luma": "0.8.99",
+  "tested_luma": "0.8.0"
 }

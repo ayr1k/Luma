@@ -8,6 +8,8 @@ from fastapi import FastAPI, Depends, HTTPException, Request, Query
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.exceptions import RequestValidationError
 from .config import Settings
+from .version import VERSION,CODENAME
+from .updates import Updates
 from .core import AgentCore
 from .model import LANModel
 from .storage import Store, empty_session
@@ -34,6 +36,8 @@ def create_app(settings=None, model=None, on_task_done=None):
     @asynccontextmanager
     async def lifespan(app):
         with DataLease(settings.data_dir):
+            from .upgrade import audit
+            audit(settings.data_dir)
             import sys
             if getattr(sys, 'frozen', False):
                 extensions.sync_bundled(Path(sys.executable).parent / 'Bundled-Plugins')
@@ -44,7 +48,7 @@ def create_app(settings=None, model=None, on_task_done=None):
             finally:
                 await asyncio.to_thread(tasks.shutdown)
 
-    app = FastAPI(title='Local Agent Client API', version='0.7.8', lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(title='Local Agent Client API', version=VERSION, lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
     bearer = HTTPBearer(auto_error=False)
     lock = threading.Lock()
 
@@ -111,7 +115,7 @@ def create_app(settings=None, model=None, on_task_done=None):
 
     @app.get('/health')
     def health():
-        return {'ok': True, 'service': 'local-agent-client', 'version': '0.7.8'}
+        return {'ok': True, 'service': 'local-agent-client', 'version': VERSION, 'codename': CODENAME}
 
     @app.get('/')
     def index():
@@ -148,6 +152,14 @@ def create_app(settings=None, model=None, on_task_done=None):
     def extension_action(body: ExtensionAction):
         with exclusive():
             no_pending()
+            if body.action == 'rollback':return extensions.rollback(body.id)
+            if body.action == 'sync-bundled':
+                import sys
+                folder=Path(sys.executable).parent if getattr(sys,'frozen',False) else Path(__file__).resolve().parent.parent
+                extensions.sync_bundled(folder/('Bundled-Plugins' if getattr(sys,'frozen',False) else 'preset_plugins'))
+                from .bundled_skills import sync_skills
+                sync_skills(extensions,folder/('Preset-Skills' if getattr(sys,'frozen',False) else 'presets'))
+                return extensions.list()
             if body.action == 'details':return extensions.details(body.id)
             if body.action == 'diagnose':return extensions.diagnose()
             if body.action == 'validate':return extensions.validate_package(body.data,body.directory)
@@ -190,7 +202,7 @@ def create_app(settings=None, model=None, on_task_done=None):
         with exclusive():
             # Export an allowlist only: no host, model names, keys, prompts, paths or provider text.
             e=profiles.entry(settings)
-            return {'format':'luma-model-diagnostics','version':1,'luma':'0.7.8',
+            return {'format':'luma-model-diagnostics','version':1,'luma':VERSION,
                     'parameters':e['parameters'],'manual':e['manual'],'tests':e['tested']}
 
     @app.get('/v1/preferences', dependencies=[Depends(auth)])
@@ -595,6 +607,39 @@ def create_app(settings=None, model=None, on_task_done=None):
                 content=result.get('content')
                 if not isinstance(content,str) or not content.strip():raise ValueError('模型未返回提交说明，请手动填写。')
                 return {'message':content.strip()[:16000],'truncated':truncated}
-            return git.action(workspace,body)
+            try:
+                result=git.action(workspace,body)
+            except ValueError as exc:
+                git.record(body.action,workspace,False,str(exc));raise
+            git.record(body.action,workspace,True,'操作完成')
+            return result
+
+    from .schemas import GitClone, UpdateOptions
+    updates=Updates(settings.data_dir)
+
+    @app.get('/v1/upgrade-report', dependencies=[Depends(auth)])
+    def upgrade_report():
+        from .upgrade import audit
+        with exclusive():return audit(settings.data_dir)
+
+    @app.get('/v1/updates', dependencies=[Depends(auth)])
+    def updates_status():return updates.check()
+
+    @app.post('/v1/updates/check', dependencies=[Depends(auth)])
+    def updates_check():return updates.check(force=True)
+
+    @app.put('/v1/updates', dependencies=[Depends(auth)])
+    def updates_options(body: UpdateOptions):return updates.configure(body.automatic,body.channel)
+
+    @app.get('/v1/git/operations', dependencies=[Depends(auth)])
+    def git_operations():
+        with exclusive():return git.operations()
+
+    @app.post('/v1/git/clone', dependencies=[Depends(auth)])
+    def git_clone(body: GitClone):
+        with exclusive():
+            no_pending()
+            path=git.clone(body.url,body.parent,body.name)
+            return store.add_project(path)
 
     return app

@@ -6,7 +6,8 @@ from .storage import atomic_json
 
 from .contributions import validate_contribution, configuration, schema
 
-VERSION = (0, 7, 3)
+from .version import VERSION_TUPLE as VERSION
+from .bundle_history import PLUGIN_DIGESTS
 MAX_INSTALLED = 100
 MAX_ENABLED_CODE = 20
 MAX_SELECTED_PLUGINS = 12
@@ -78,29 +79,40 @@ class Extensions:
         self.registry = self.base / 'registry.json'
 
     def sync_bundled(self, directory):
-        """Import installer-selected bundles once; preserve removals and local replacements."""
+        """Reconcile shipped packages without validating obsolete compatibility first."""
         directory=Path(directory)
         if not directory.is_dir():return
+        self.bundle_errors=[]
         receipts=self.base/'bundled-receipts.json'
         try:
             seen=json.loads(receipts.read_text(encoding='utf-8')) if receipts.exists() else {}
             if not isinstance(seen,dict):raise ValueError('invalid receipt')
         except (ValueError,OSError):
-            self.bundle_errors.append({'id':'bundled','error':'预置插件记录无法读取，未自动导入'})
+            self.bundle_errors.append({'id':'bundled','error':'更新记录损坏；请保留数据并从 ZIP 手动更新，未删除任何配置。'})
             return
         for folder in sorted(directory.iterdir()):
             if not folder.is_dir():continue
             try:
                 preview=self.inspect(directory=str(folder));key=preview['manifest']['id'];digest=preview['digest']
                 current=self.state()['plugins'].get(key);last=seen.get(key)
-                # Missing after a recorded import means the user uninstalled it.
-                if last and current is None:continue
-                if current and current.get('origin')!='bundled':continue
-                if current:self.verified_files(key,current)
-                if current and current['digest']==digest:
-                    seen[key]=digest;atomic_json(receipts,seen);continue
-                if current and last and current['digest']!=last:continue
-                self.install(directory=str(folder),expected_digest=digest,origin='bundled')
+                if last and current is None:continue  # Respect explicit uninstall.
+                if current:
+                    files=self.package_files(directory=str(bounded(self.packages,key)))
+                    actual=self.digest(files)
+                    if actual!=current['digest']:raise ValueError('本地文件已修改，已保留；请导入新版并确认替换。')
+                    legacy=actual in PLUGIN_DIGESTS.get(key,[])
+                    if current.get('origin')!='bundled' and not legacy:continue
+                    if actual==digest:
+                        # Registry may contain obsolete metadata even when package files are current.
+                        state=self.state();state['plugins'][key]['manifest']=preview['manifest']
+                        state['plugins'][key]['origin']='bundled';atomic_json(self.registry,state)
+                    elif current.get('bundle_hold')==digest:continue  # Explicit rollback pins this bundle.
+                    else:
+                        old_version=tuple(map(int,current['manifest']['version'].split('.')))
+                        new_version=tuple(map(int,preview['manifest']['version'].split('.')))
+                        if new_version<old_version:continue  # Channel switch must not silently downgrade.
+                        self.install(directory=str(folder),expected_digest=digest,origin='bundled')
+                else:self.install(directory=str(folder),expected_digest=digest,origin='bundled')
                 seen[key]=digest;atomic_json(receipts,seen)
             except (ValueError,OSError) as exc:
                 self.bundle_errors.append({'id':folder.name,'error':str(exc)[:300]})
@@ -216,12 +228,19 @@ class Extensions:
 
     def inspect(self, data=None, directory=None):
         files=self.package_files(data,directory);m=self.manifest(files)
-        return {'manifest':m,'digest':self.digest(files),'file_count':len(files),'requires_trust':bool(m.get('tools'))}
+        current=self.state()['plugins'].get(m['id'])
+        return {'manifest':m,'digest':self.digest(files),'file_count':len(files),'requires_trust':bool(m.get('tools')),
+                'installed_version':current['manifest']['version'] if current else None,
+                'source':str(Path(directory).resolve()) if directory else '本地 ZIP',
+                'permissions':m.get('permissions',[]),'replaces_existing':bool(current)}
 
     def install(self, data=None, directory=None, expected_digest=None, origin="local"):
         files=self.package_files(data,directory);m=self.manifest(files);digest=self.digest(files)
         if expected_digest!=digest:raise ValueError('插件内容已变化，请重新预览确认')
         state=self.state();key=m['id'];target=self.packages/key
+        old=state['plugins'].get(key,{})
+        try:config=configuration(m,old.get('config',{})) if m.get('contribution') else {}
+        except ValueError:raise ValueError('现有配置与目标版本不兼容，请先导出配置并调整；原包和数据未改动。') from None
         if key not in state['plugins'] and len(state['plugins'])>=MAX_INSTALLED:raise ValueError('最多安装 100 个插件')
         if target.is_symlink() or (hasattr(target,'is_junction') and target.is_junction()):raise ValueError('安装目录不能为链接')
         stage=self.base/('stage-'+uuid.uuid4().hex);stage.mkdir()
@@ -232,10 +251,13 @@ class Extensions:
             if target.exists():
                 backup=self.base/'trash'/(key+'-'+uuid.uuid4().hex);target.rename(backup)
             stage.rename(target)
-            previous=state['plugins'].get(key,{}).get('config',{})
-            try: config=configuration(m,previous) if m.get('contribution') else {}
-            except ValueError: config=configuration(m)
-            state['plugins'][key]={'config':config,'enabled':False,'trusted':False,'digest':digest,'manifest':m,'origin':origin}
+            # Updates never inherit code trust. Configuration/data survive, and old package is reversible.
+            history=list(old.get('history',[]))
+            if backup:
+                prior={k:v for k,v in old.items() if k not in {'history','bundle_hold'}}
+                history.append({'directory':backup.name,'row':prior,'time':time.time()})
+            state['plugins'][key]={'config':config,'enabled':False,'trusted':False,'digest':digest,'manifest':m,'origin':origin,
+                'source':str(Path(directory).resolve()) if directory else '本地 ZIP','history':history[-5:],'installed_at':time.time()}
             try:atomic_json(self.registry,state)
             except Exception:
                 target.rename(stage)
@@ -424,6 +446,8 @@ class Extensions:
         return dict(id=key,name=m['name'],version=m['version'],author=m.get('author','作者未提供'),
             description=m['description'],examples=m.get('examples',[]),changelog=m.get('changelog','作者未提供更新说明'),
             tools=m.get('tools',[]),skills=m.get('skills',[]),contribution=m.get('contribution'),
+            origin=row.get('origin','local'),source=row.get('source','旧版安装记录'),directory=str(self.packages/key),
+            history=[{'version':h['row']['manifest']['version'],'time':h['time']} for h in row.get('history',[])],
             tested_luma=m.get('tested_luma','未声明'),compatibility={'min':m.get('min_luma','0.6.0'),'max':m.get('max_luma','0.7.99')},permissions=m.get('permissions',[]))
 
     def diagnose(self):
@@ -475,3 +499,18 @@ class Extensions:
         try:files=self.package_files(data,directory)
         except (ValueError,OSError) as exc:return {'ok':False,'issues':[{'path':'package','message':str(exc)}],'warnings':[]}
         return check_files(self,files)
+
+    def rollback(self,key):
+        identifier(key);state=self.state();row=state['plugins'].get(key)
+        if not row or not row.get('history'):raise ValueError('没有可回退版本')
+        previous=row['history'][-1];folder=bounded(self.base/'trash',previous['directory'])
+        files=self.package_files(directory=str(folder))
+        if self.digest(files)!=previous['row']['digest']:raise ValueError('回退包内容已变化')
+        self.manifest(files)  # Cannot restore a version incompatible with this host.
+        result=self.install(directory=str(folder),expected_digest=previous['row']['digest'],origin=previous['row'].get('origin','local'))
+        updated=self.state();restored=updated['plugins'][key]
+        restored['source']=previous['row'].get('source','历史安装包')
+        restored['history']=row['history'][:-1]
+        restored['bundle_hold']=row['digest']
+        atomic_json(self.registry,updated)
+        return result

@@ -2,7 +2,7 @@
   "id": "luma-material",
   "name": "半透明面板",
   "description": "应用内面板透明与模糊效果，不改变 Windows 窗口透明度。",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "api_version": 1,
   "min_luma": "0.6.3",
   "category": "appearance",
@@ -14,7 +14,7 @@
   "examples": [
     "在扩展中心启用「半透明面板」，然后打开配置调整效果。"
   ],
-  "changelog": "1.1.0 / Luma 0.7.0：验证多会话下的工具、配置与工作目录行为；更新兼容范围和 Skill 多任务说明。",
-  "max_luma": "0.7.99",
-  "tested_luma": "0.7.0"
+  "changelog": "1.2.0 / Luma 0.8.0 SoHo：重新检查工具、贡献配置与 Skill；更新兼容范围。支持保留配置的预置包升级。",
+  "max_luma": "0.8.99",
+  "tested_luma": "0.8.0"
 }

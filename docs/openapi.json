@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Local Agent Client API",
-    "version": "0.7.8"
+    "version": "0.8.0"
   },
   "paths": {
     "/health": {
@@ -2270,6 +2270,170 @@
           }
         }
       }
+    },
+    "/v1/upgrade-report": {
+      "get": {
+        "summary": "Upgrade Report",
+        "operationId": "upgrade_report_v1_upgrade_report_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/updates": {
+      "get": {
+        "summary": "Updates Status",
+        "operationId": "updates_status_v1_updates_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "Updates Options",
+        "operationId": "updates_options_v1_updates_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOptions"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/updates/check": {
+      "post": {
+        "summary": "Updates Check",
+        "operationId": "updates_check_v1_updates_check_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/git/operations": {
+      "get": {
+        "summary": "Git Operations",
+        "operationId": "git_operations_v1_git_operations_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/git/clone": {
+      "post": {
+        "summary": "Git Clone",
+        "operationId": "git_clone_v1_git_clone_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GitClone"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -2515,6 +2679,8 @@
           "action": {
             "type": "string",
             "enum": [
+              "rollback",
+              "sync-bundled",
               "details",
               "diagnose",
               "validate",
@@ -2701,6 +2867,36 @@
           "action"
         ],
         "title": "GitAction"
+      },
+      "GitClone": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Url"
+          },
+          "parent": {
+            "type": "string",
+            "maxLength": 4096,
+            "minLength": 1,
+            "title": "Parent"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "url",
+          "parent",
+          "name"
+        ],
+        "title": "GitClone"
       },
       "GitPath": {
         "properties": {
@@ -3493,6 +3689,27 @@
           "session"
         ],
         "title": "TaskState"
+      },
+      "UpdateOptions": {
+        "properties": {
+          "automatic": {
+            "type": "boolean",
+            "title": "Automatic",
+            "default": true
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "Latest",
+              "LTS"
+            ],
+            "title": "Channel",
+            "default": "Latest"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "UpdateOptions"
       },
       "ValidationError": {
         "properties": {

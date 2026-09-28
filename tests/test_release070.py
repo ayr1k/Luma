@@ -69,13 +69,13 @@ def test_all_bundled_compatibility_and_skill_updates(tmp_path):
  e=Extensions(tmp_path/'data');e.sync_bundled(ROOT/'preset_plugins');listing=e.list()
  assert len(listing['plugins'])==11 and not listing['errors']
  for p in listing['plugins']:
-  detail=e.details(p['id']);assert detail['compatibility']['max']=='0.7.99' and detail['tested_luma']=='0.7.0'
+  detail=e.details(p['id']);assert detail['compatibility']['max']=='0.8.99' and detail['tested_luma']=='0.8.0'
   assert e.validate_package(directory=str(ROOT/'preset_plugins'/p['id']))['ok']
   e.toggle(p['id'],True,p['requires_trust'])
  assert len([s for s in e.list()['skills'] if s['enabled']])==4
  sync_skills(e,ROOT/'presets');assert len([s for s in e.list()['skills'] if s['id'].startswith('user:')])==5
  for path in list((ROOT/'presets').rglob('SKILL.md'))+list((ROOT/'preset_plugins').rglob('SKILL.md')):
-  meta=skill_metadata(path.read_text(encoding='utf-8'),path.parent.name);assert meta['max_luma']=='0.7.99' and meta['tested_luma']=='0.7.0'
+  meta=skill_metadata(path.read_text(encoding='utf-8'),path.parent.name);assert meta['max_luma']=='0.8.99' and meta['tested_luma']=='0.8.0'
  edited=e.skills/'luma-code-review/SKILL.md';edited.write_text('User edited content',encoding='utf-8')
  sync_skills(e,ROOT/'presets');assert edited.read_text()=='User edited content'
  with pytest.raises(ValueError,match='不兼容'):skill_metadata('---\nmax_luma: 0.6.99\n---\nold','old')
